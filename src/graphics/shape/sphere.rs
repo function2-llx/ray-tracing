@@ -1,6 +1,6 @@
 use serde::Deserialize;
 
-use crate::graphics::material::{Material, Optics, Texture};
+use crate::graphics::material::{Material, Surface, Texture};
 use crate::graphics::{Hit, HitTemp, Hittable, Shape, TextureMap};
 use crate::math::vector::{Vector2f, Vector3f};
 use crate::math::{FloatT, Ray};

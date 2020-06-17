@@ -3,11 +3,11 @@ use serde::Deserialize;
 use crate::scene::{Camera, Scene};
 use crate::utils::Image;
 
-mod pt;
 mod ppm;
+mod pt;
 
-pub use pt::*;
 pub use ppm::*;
+pub use pt::*;
 
 pub trait Render {
     fn render(&self, scene: &Scene, camera: &Camera) -> Image;

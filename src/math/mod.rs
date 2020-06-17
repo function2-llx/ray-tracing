@@ -10,6 +10,7 @@ pub type FloatT = f64;
 pub const EPS: FloatT = 1e-8;
 pub const ZERO: FloatT = 0.0;
 pub const PI: FloatT = std::f64::consts::PI;
+pub const INF: FloatT = 1e30;
 
 pub fn sqr(x: FloatT) -> FloatT {
     x * x

@@ -1,6 +1,9 @@
+use crate::math::vector::Vector3f;
 use crate::math::{clamp, FloatT};
+use crate::scene::{Camera, Render, Renderer, Scene};
 use serde::export::Formatter;
 use serde::Deserialize;
+use std::fs;
 use std::fs::File;
 use std::io::Write;
 
@@ -9,9 +12,10 @@ pub fn trans(x: FloatT) -> u8 {
 }
 
 mod image;
+mod kdtree;
+
 pub use self::image::*;
-use crate::scene::{Camera, Render, Renderer, Scene};
-use std::fs;
+pub use kdtree::*;
 
 // shoot scene with camera (render with renderer), save to save_path
 #[derive(Deserialize)]
@@ -30,9 +34,17 @@ impl Task {
     }
 
     pub fn run(&self) {
-        rayon::ThreadPoolBuilder::new().num_threads(self.num_threads).build().unwrap().install(|| {
-            let image = self.renderer.render(&self.scene, &self.camera);
-            image.dump(&self.save_path, true);
-        });
+        rayon::ThreadPoolBuilder::new()
+            .num_threads(self.num_threads)
+            .build()
+            .unwrap()
+            .install(|| {
+                let image = self.renderer.render(&self.scene, &self.camera);
+                image.dump(&self.save_path, true);
+            });
     }
+}
+
+pub trait Positionable {
+    fn pos(&self) -> Vector3f;
 }

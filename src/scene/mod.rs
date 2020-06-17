@@ -3,7 +3,7 @@ use std::fs;
 use serde::Deserialize;
 use serde_json::Value;
 
-use crate::graphics::material::{Material, Optics};
+use crate::graphics::material::{Material, Surface};
 use crate::graphics::{Color, Hittable};
 use crate::graphics::{Hit, Object};
 use crate::math::vector::Vector3f;

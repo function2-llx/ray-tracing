@@ -11,9 +11,9 @@ pub enum Texture {
     Image(Image),
 }
 
-// 光学特性
+// 表面光学特性
 #[derive(Copy, Clone, Deserialize, Debug)]
-pub enum Optics {
+pub enum Surface {
     Specular,           // 镜面
     Diffuse,            // 漫反射
     Refractive(FloatT), // 折射(折射率)
@@ -22,5 +22,5 @@ pub enum Optics {
 #[derive(Deserialize, Debug)]
 pub struct Material {
     pub texture: Texture,
-    pub optics: Optics,
+    pub optics: Surface,
 }

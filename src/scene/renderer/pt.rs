@@ -4,7 +4,7 @@ use rand::{thread_rng, Rng};
 use rayon::prelude::*;
 use serde::Deserialize;
 
-use crate::graphics::material::Optics;
+use crate::graphics::material::Surface;
 use crate::graphics::{Color, Hit};
 use crate::math::matrix::Matrix3;
 use crate::math::vector::Vector3f;
@@ -42,7 +42,7 @@ impl PT {
                     return scene.env;
                 }
                 match &object.material.optics {
-                    Optics::Diffuse => {
+                    Surface::Diffuse => {
                         if Vector3f::dot(&normal, &ray.direction) > 0.0 {
                             // 调整为反射平面的法向量
                             normal = -normal;
@@ -63,7 +63,7 @@ impl PT {
                         assert!(Vector3f::dot(&normal, &dir) >= 0.0);
                         self.path_tracing(scene, Ray::new(pos, dir), n_stack, depth + 1, rng)
                     }
-                    Optics::Specular => {
+                    Surface::Specular => {
                         // 此时一定在物体外侧，因为不可能进入反射的材质
                         self.path_tracing(
                             scene,
@@ -77,7 +77,7 @@ impl PT {
                             rng,
                         )
                     }
-                    Optics::Refractive(nt) => {
+                    Surface::Refractive(nt) => {
                         let inside = if Vector3f::dot(&normal, &ray.direction) > 0.0 {
                             // (-normal, true)
                             normal = -normal;
@@ -90,7 +90,7 @@ impl PT {
                         let (n, nt) = if inside {
                             let len = n_stack.len();
                             if len < 2 {
-                                println!("fuck");
+                                println!("abnormal");
                                 let a = 1.0;
                                 (a, a + 0.1)
                             } else {
@@ -182,13 +182,7 @@ impl Render for PT {
                 .map(|ray| {
                     let mut color = Color::empty();
                     for _ in 0..self.samples {
-                        color += self.path_tracing(
-                            scene,
-                            ray.clone(),
-                            vec![scene.n],
-                            0,
-                            &mut rng,
-                        );
+                        color += self.path_tracing(scene, ray.clone(), vec![scene.n], 0, &mut rng);
                     }
                     color /= self.samples as FloatT;
                     Vector3f::new([clamp(color[0]), clamp(color[1]), clamp(color[2])])
