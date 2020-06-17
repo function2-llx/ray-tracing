@@ -68,9 +68,9 @@ impl Vector3f {
 
     /// 随便返回一个和自己正交的向量
     pub fn get_orthogonal(&self) -> Self {
-        if self[0] < self[1].min(self[2]) {
+        if self[0].abs() < self[1].abs().min(self[2].abs()) {
             Self::new([0.0, -self[2], self[1]])
-        } else if self[1] < self[2] {
+        } else if self[1].abs() < self[2].abs() {
             Self::new([-self[2], 0.0, self[0]])
         } else {
             Self::new([-self[1], self[0], 0.0])
@@ -159,6 +159,6 @@ impl Div<FloatT> for Vector3f {
 impl Neg for Vector3f {
     type Output = Self;
     fn neg(self) -> Self {
-        Self::new([-self[0], self[1], self[2]])
+        Self::new([-self[0], -self[1], -self[2]])
     }
 }

@@ -15,8 +15,8 @@ mod camera;
 
 use crate::math::matrix::Matrix3;
 pub use camera::*;
-use rand::Rng;
 use rand::prelude::ThreadRng;
+use rand::Rng;
 
 #[derive(Deserialize, Debug)]
 pub struct Scene {
@@ -51,10 +51,10 @@ impl Scene {
     pub fn path_tracing(
         &self,
         ray: Ray,
-        n_stack: &mut Vec<FloatT>,
+        n_stack: Vec<FloatT>,
         depth: usize,
         max_depth: usize,
-        rng: &mut ThreadRng
+        rng: &mut ThreadRng,
     ) -> Color {
         if let Some(Hit {
             pos,
@@ -96,23 +96,31 @@ impl Scene {
                                 ray.direction
                                     - normal * 2.0 * Vector3f::dot(&normal, &ray.direction),
                             ),
-                            n_stack,
+                            n_stack.clone(),
                             depth + 1,
                             max_depth,
                             rng,
                         )
                     }
                     Optics::Refractive(nt) => {
-                        let (w, inside) = if Vector3f::dot(&normal, &ray.direction) > 0.0 {
-                            (-normal, true)
+                        let inside = if Vector3f::dot(&normal, &ray.direction) > 0.0 {
+                            // (-normal, true)
+                            normal = -normal;
+                            true
                         } else {
-                            (normal, false)
+                            false
                         };
 
                         // 当前折射率和即将进入的介质的折射率
                         let (n, nt) = if inside {
                             let len = n_stack.len();
-                            (n_stack[len - 1], n_stack[len - 2])
+                            if len < 2 {
+                                println!("fuck");
+                                let mut a = 1.0;
+                                (a, a + 0.1)
+                            } else {
+                                (n_stack[len - 1], n_stack[len - 2])
+                            }
                         } else {
                             (*n_stack.last().unwrap(), *nt)
                         };
@@ -129,7 +137,7 @@ impl Scene {
                                     ray.direction
                                         - normal * 2.0 * Vector3f::dot(&normal, &ray.direction),
                                 ),
-                                n_stack,
+                                n_stack.clone(),
                                 depth + 1,
                                 max_depth,
                                 rng,
@@ -137,8 +145,10 @@ impl Scene {
                         }
 
                         // 折射光方向
-                        let t =
-                            n * (ray.direction - normal * dn) / nt - normal * (delta / nt2).sqrt();
+                        let t = (n * (ray.direction - normal * dn) / nt
+                            - normal * (delta / nt2).sqrt())
+                        .normalized();
+                        assert!(Vector3f::dot(&t, &normal) <= 0.0);
 
                         // 计算反射光强占比
                         let r = {
@@ -154,20 +164,28 @@ impl Scene {
                             Ray::new(
                                 pos,
                                 ray.direction
-                                    - w * 2.0 * Vector3f::dot(&w, &ray.direction),
+                                    - normal * 2.0 * Vector3f::dot(&normal, &ray.direction),
                             ),
-                            n_stack,
+                            n_stack.clone(),
                             depth + 1,
                             max_depth,
                             rng,
                         ) + (1.0 - r) * {
+                            let mut new_stack = n_stack.clone();
                             if inside {
-                                n_stack.pop();
+                                new_stack.pop();
                             } else {
-                                n_stack.push(nt);
+                                new_stack.push(nt);
                             }
-                            self.path_tracing(Ray::new(pos, t), n_stack, depth + 1, max_depth, rng)
+                            self.path_tracing(
+                                Ray::new(pos, t),
+                                new_stack,
+                                depth + 1,
+                                max_depth,
+                                rng,
+                            )
                         }
+                        // self.path_tracing(Ray::new(pos, t), n_stack, depth + 1, max_depth, rng)
                     }
                 }
             };
