@@ -189,16 +189,16 @@
         "direction": [0, 0, 1],
         "up": [0, 1, 0],
         "dis": 373,
-        "w": 400,
-        "h": 400,
-        "anti_alias": 4
+        "w": 640,
+        "h": 480,
+        "anti_alias": 5
     },
     "renderer": {
         "PT": {
-            "samples": 150,
-            "max_depth": 4
+            "samples": 10000,
+            "max_depth": 5
         }
     },
     "save_path": "output/example.png",
-    "num_threads": 16
+    "num_threads": 40
 }
