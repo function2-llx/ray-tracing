@@ -8,7 +8,6 @@ use crate::graphics::Color;
 use crate::math::FloatT;
 use crate::utils::trans;
 use image::{open, GenericImageView};
-use serde::de::{MapAccess, Visitor};
 
 #[derive(Clone)]
 pub struct Image {

@@ -3,7 +3,6 @@ use std::ops;
 use crate::math::vector::Vector3f;
 use crate::math::FloatT;
 use serde::Deserialize;
-use std::ops::{Deref, Mul};
 
 // Matrix with order 3
 #[repr(C)]

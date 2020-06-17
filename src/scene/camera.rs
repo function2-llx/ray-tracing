@@ -1,17 +1,13 @@
 use std::sync::Mutex;
 
 use pbr::ProgressBar;
-use rand::{thread_rng, Rng, SeedableRng};
+use rand::{thread_rng, Rng};
 use serde::{Deserialize, Deserializer};
 
-use crate::graphics::Color;
 use crate::math::matrix::Matrix3;
 use crate::math::vector::Vector3f;
 use crate::math::{FloatT, Ray, EPS};
-use crate::scene::Scene;
-use crate::utils::Image;
 use rand::prelude::ThreadRng;
-use rayon::prelude::*;
 
 pub struct Camera {
     pub center: Vector3f,

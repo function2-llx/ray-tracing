@@ -1,7 +1,7 @@
 use serde::Deserialize;
 
 use crate::graphics::{Hit, HitTemp, Hittable, TextureMap};
-use crate::math::vector::{Vector2f, Vector3f};
+use crate::math::vector::Vector3f;
 use crate::math::{FloatT, Ray};
 pub use plane::*;
 pub use sphere::*;

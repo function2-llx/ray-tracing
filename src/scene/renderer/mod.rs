@@ -4,8 +4,10 @@ use crate::scene::{Camera, Scene};
 use crate::utils::Image;
 
 mod pt;
+mod ppm;
 
 pub use pt::*;
+pub use ppm::*;
 
 pub trait Render {
     fn render(&self, scene: &Scene, camera: &Camera) -> Image;
@@ -14,6 +16,7 @@ pub trait Render {
 #[derive(Deserialize)]
 pub enum Renderer {
     PT(PT),
+    PPM(PPM),
 }
 
 impl Render for Renderer {
@@ -21,6 +24,7 @@ impl Render for Renderer {
         use Renderer::*;
         match self {
             PT(pt) => pt.render(scene, camera),
+            PPM(ppm) => ppm.render(scene, camera),
         }
     }
 }

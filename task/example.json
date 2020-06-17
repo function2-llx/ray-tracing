@@ -195,9 +195,10 @@
     },
     "renderer": {
         "PT": {
-            "samples": 500,
+            "samples": 150,
             "max_depth": 4
         }
     },
-    "save_path": "output/example.png"
+    "save_path": "output/example.png",
+    "num_threads": 16
 }

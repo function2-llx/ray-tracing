@@ -43,10 +43,6 @@ impl TextureMap for Sphere {
 }
 
 impl Sphere {
-    pub fn new(center: Vector3f, radius: FloatT, material: Material) -> Self {
-        Self { center, radius }
-    }
-
     pub fn contains(&self, p: Vector3f) -> bool {
         (self.center - p).length2() <= self.radius * self.radius
     }

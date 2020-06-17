@@ -1,9 +1,8 @@
 use serde::{Deserialize, Deserializer};
 
-use crate::graphics::{Hit, HitTemp};
+use crate::graphics::HitTemp;
 use crate::math::vector::{Vector2f, Vector3f};
 use crate::math::{FloatT, Ray};
-use crate::utils::modf;
 
 #[derive(Debug)]
 pub struct Plane {

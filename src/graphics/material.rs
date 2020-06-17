@@ -1,6 +1,6 @@
 use serde::Deserialize;
 
-use crate::graphics::{Color, Hit};
+use crate::graphics::Color;
 use crate::math::vector::Vector3f;
 use crate::math::{FloatT, Ray};
 use crate::utils::Image;

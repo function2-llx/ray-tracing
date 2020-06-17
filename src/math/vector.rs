@@ -3,7 +3,7 @@ use std::fmt::{Display, Formatter};
 use crate::math::FloatT;
 use serde::Deserialize;
 use std::iter::Sum;
-use std::ops::{Add, AddAssign, Deref, DerefMut, Div, Mul, Neg, Sub, DivAssign};
+use std::ops::{Add, AddAssign, Deref, DerefMut, Div, DivAssign, Mul, Neg, Sub};
 
 #[derive(Copy, Clone, Deserialize)]
 #[repr(C)]

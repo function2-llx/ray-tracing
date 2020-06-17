@@ -1,18 +1,11 @@
-use crate::graphics::Color;
-use crate::math::vector::{Vector2f, Vector3f};
 use crate::math::{clamp, FloatT};
-use serde::export::fmt::Debug;
 use serde::export::Formatter;
-use serde::{Deserialize, Deserializer};
+use serde::Deserialize;
 use std::fs::File;
 use std::io::Write;
 
 pub fn trans(x: FloatT) -> u8 {
     (clamp(x).powf(1.0 / 2.2) * 255.0 + 0.5) as u8
-}
-pub fn modf(f: FloatT, m: usize) -> usize {
-    let m = m as usize;
-    ((f as isize % m as isize) + m as isize) as usize % m
 }
 
 mod image;
@@ -27,6 +20,7 @@ pub struct Task {
     pub camera: Camera,
     pub save_path: String,
     pub renderer: Renderer,
+    pub num_threads: usize,
 }
 
 impl Task {
@@ -36,7 +30,9 @@ impl Task {
     }
 
     pub fn run(&self) {
-        let image = self.renderer.render(&self.scene, &self.camera);
-        image.dump(&self.save_path, true);
+        rayon::ThreadPoolBuilder::new().num_threads(self.num_threads).build().unwrap().install(|| {
+            let image = self.renderer.render(&self.scene, &self.camera);
+            image.dump(&self.save_path, true);
+        });
     }
 }
