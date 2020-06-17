@@ -1,0 +1,126 @@
+{
+    "scene": {
+        "objects": [
+            {
+                "shape": {
+                    "Plane": {
+                        "normal": [1, 0, 0],
+                        "d": -3
+                    }
+                },
+                "emission": [0, 0, 0],
+                "material": {
+                    "texture": {
+                        "Pure": [0.5, 0.5, 0.5]
+                    },
+                    "optics": "Diffuse"
+                }
+            },
+            {
+                "shape": {
+                    "Plane": {
+                        "normal": [-1, 0, 0],
+                        "d": -3
+                    }
+                },
+                "emission": [0, 0, 0],
+                "material": {
+                    "texture": {
+                        "Pure": [0.75, 0.25, 0.25]
+                    },
+                    "optics": "Diffuse"
+                }
+            },
+            {
+                "shape": {
+                    "Plane": {
+                        "normal": [0, 1, 0],
+                        "d": -3
+                    }
+                },
+                "emission": [0, 0, 0],
+                "material": {
+                    "texture": {
+                        "Pure": [0.25, 0.25, 0.75]
+                    },
+                    "optics": "Diffuse"
+                }
+            },
+            {
+                "shape": {
+                    "Plane": {
+                        "normal": [0, -1, 0],
+                        "d": -3
+                    }
+                },
+                "emission": [0, 0, 0],
+                "material": {
+                    "texture": {
+                        "Pure": [0.25, 0.75, 0.25]
+                    },
+                    "optics": "Diffuse"
+                }
+            },
+            {
+                "shape": {
+                    "Plane": {
+                        "normal": [0, 0, -1],
+                        "d": -3
+                    }
+                },
+                "emission": [0, 0, 0],
+                "material": {
+                    "texture": {
+                        "Pure": [0.75, 0.25, 0.5]
+                    },
+                    "optics": "Diffuse"
+                }
+            },
+            {
+                "shape": {
+                    "Plane": {
+                        "normal": [0, 0, 1],
+                        "d": -30
+                    }
+                },
+                "emission": [1, 1, 1],
+                "material": {
+                    "texture": {
+                        "Pure": [0, 0, 0]
+                    },
+                    "optics": "Diffuse"
+                }
+            },
+            {
+                "shape": {
+                    "Sphere": {
+                        "center": [1, 1, 1],
+                        "radius": 0.75
+                    }
+                },
+                "emission": [0.0, 0.0, 0.0],
+                "material": {
+                    "texture": {
+                        "Pure": [0.99, 0.99, 0.99]
+                    },
+                    "optics": {
+                        "Diffuse": null
+                    }
+                }
+            }
+        ],
+        "env": [1, 1, 1],
+        "n": 1
+    },
+    "camera": {
+        "center": [0, 0, -10],
+        "direction": [0, 0, 1],
+        "up": [0, 1, 0],
+        "dis": 373,
+        "w": 400,
+        "h": 400,
+        "samples": 1000
+    },
+    "max_depth": 2,
+    "save_path": "output/example.png"
+}

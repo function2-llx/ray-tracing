@@ -1,0 +1,18 @@
+,
+{
+"shape": {
+"Sphere": {
+"center": [0, 0, 0],
+"radius": 1
+}
+},
+"emission": [0.1, 0, 1],
+"material": {
+"texture": {
+"Pure": [0, 0, 0]
+},
+"optics": "Diffuse"
+}
+},
+
+,
