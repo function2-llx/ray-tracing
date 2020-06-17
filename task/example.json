@@ -73,7 +73,7 @@
                     "texture": {
                         "Image": {
                             "path": "asset/littile-pig-head.jpg",
-                            "lr": true,
+                            "lr": false,
                             "ud": false
                         }
                     },
@@ -166,11 +166,11 @@
             {
                 "shape": {
                     "Sphere": {
-                        "center": [0, 550, 0],
+                        "center": [0, 520, 0],
                         "radius": 100
                     }
                 },
-                "emission": [1, 1, 1],
+                "emission": [5, 5, 5],
                 "material": {
                     "texture": {
                         "Pure": [0, 0, 0]
@@ -181,7 +181,7 @@
                 }
             }
         ],
-        "env": [1, 1, 1],
+        "env": [0, 0, 0],
         "n": 1
     },
     "camera": {
@@ -191,8 +191,13 @@
         "dis": 373,
         "w": 400,
         "h": 400,
-        "samples": 2000
+        "anti_alias": 4
     },
-    "max_depth": 3,
+    "renderer": {
+        "PT": {
+            "samples": 500,
+            "max_depth": 4
+        }
+    },
     "save_path": "output/example.png"
 }

@@ -9,8 +9,8 @@ use crate::utils::modf;
 pub struct Plane {
     pub normal: Vector3f,
     pub d: FloatT,
-    origin: Vector3f,   // 等于 d * normal
-    x: Vector3f,    // x, y: 根据 normal 建个系
+    origin: Vector3f, // 等于 d * normal
+    x: Vector3f,      // x, y: 根据 normal 建个系
     y: Vector3f,
 }
 
@@ -34,7 +34,7 @@ impl<'de> Deserialize<'de> for Plane {
             d: info.d,
             origin,
             x,
-            y
+            y,
         })
     }
 }

@@ -17,3 +17,26 @@ pub fn modf(f: FloatT, m: usize) -> usize {
 
 mod image;
 pub use self::image::*;
+use crate::scene::{Camera, Render, Renderer, Scene};
+use std::fs;
+
+// shoot scene with camera (render with renderer), save to save_path
+#[derive(Deserialize)]
+pub struct Task {
+    pub scene: Scene,
+    pub camera: Camera,
+    pub save_path: String,
+    pub renderer: Renderer,
+}
+
+impl Task {
+    pub fn from_json(path: &str) -> Self {
+        let data = fs::read_to_string(path).expect(&format!("Unable to read {}", path));
+        serde_json::from_str::<Task>(&data).expect("Cannot convert to json")
+    }
+
+    pub fn run(&self) {
+        let image = self.renderer.render(&self.scene, &self.camera);
+        image.dump(&self.save_path, true);
+    }
+}

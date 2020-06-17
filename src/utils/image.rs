@@ -94,7 +94,8 @@ impl Image {
         }
     }
 
-    fn dump_ppm(&self, path: &str, rotate: bool) {
+    // rotate: unimplemented
+    fn dump_ppm(&self, path: &str, _rotate: bool) {
         println!("Writing to {}", path);
         let errmsg = &format!("cannot save PPM to {}", path);
         let mut file = File::create(path).expect(errmsg);
@@ -113,7 +114,7 @@ impl Image {
         if let Some(format) = infer_format(path) {
             match format {
                 JPG | PNG => {
-                    let mut buf = open(path).unwrap();
+                    let buf = open(path).unwrap();
                     let mut image = Image::empty(buf.width() as usize, buf.height() as usize);
                     for x in 0..image.w {
                         for y in 0..image.h {
@@ -144,8 +145,8 @@ impl<'de> Deserialize<'de> for Image {
         #[derive(Deserialize)]
         struct ImageInfo {
             path: String,
-            lr: bool,   // 左右翻转
-            ud: bool,   // 上下翻转
+            lr: bool, // 左右翻转
+            ud: bool, // 上下翻转
         }
 
         let info = ImageInfo::deserialize(deserializer)?;

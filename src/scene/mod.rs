@@ -12,9 +12,12 @@ use crate::math::{sqr, FloatT, Ray, EPS, PI, ZERO};
 use crate::utils::Image;
 
 mod camera;
+mod renderer;
+
+pub use camera::*;
+pub use renderer::*;
 
 use crate::math::matrix::Matrix3;
-pub use camera::*;
 use rand::prelude::ThreadRng;
 use rand::Rng;
 
@@ -62,7 +65,7 @@ impl Scene {
             object,
         }) = self.hit(&ray, EPS)
         {
-            let mut illumination = || {
+            let illumination = || {
                 if depth == max_depth {
                     return self.env;
                 }
@@ -116,7 +119,7 @@ impl Scene {
                             let len = n_stack.len();
                             if len < 2 {
                                 println!("fuck");
-                                let mut a = 1.0;
+                                let a = 1.0;
                                 (a, a + 0.1)
                             } else {
                                 (n_stack[len - 1], n_stack[len - 2])
@@ -192,41 +195,6 @@ impl Scene {
             object.emission + object.color_at(pos) * illumination()
         } else {
             self.env
-        }
-    }
-}
-
-// shot scene with camera, save to save_path
-pub struct Task {
-    pub scene: Scene,
-    pub camera: Camera,
-    pub max_depth: usize,
-    pub save_path: String,
-}
-
-impl Task {
-    pub fn from_json(path: &str) -> Self {
-        // let w = serde_json::from_value::<usize>(data["width"].take()).expect("Invalid width");
-        // let h = serde_json::from_value::<usize>(data["height"].take()).expect("Invalid height");
-
-        let data = fs::read_to_string(path).expect(&format!("Unable to read {}", path));
-        let mut data = serde_json::from_str::<Value>(&data).expect("Cannot convert to json");
-
-        let scene = serde_json::from_value::<Scene>(data["scene"].take()).expect("Invalid scene");
-        println!("{:#?}", scene);
-        let camera =
-            serde_json::from_value::<Camera>(data["camera"].take()).expect("Invalid camera");
-
-        let max_depth = serde_json::from_value::<usize>(data["max_depth"].take())
-            .expect("Invalid maximum depth");
-        let save_path =
-            serde_json::from_value::<String>(data["save_path"].take()).expect("Invalid save path");
-
-        Task {
-            scene,
-            camera,
-            max_depth,
-            save_path,
         }
     }
 }

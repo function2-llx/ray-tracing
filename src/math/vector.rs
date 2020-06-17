@@ -2,7 +2,8 @@ use std::fmt::{Display, Formatter};
 
 use crate::math::FloatT;
 use serde::Deserialize;
-use std::ops::{Add, AddAssign, Deref, DerefMut, Div, Mul, Neg, Sub};
+use std::iter::Sum;
+use std::ops::{Add, AddAssign, Deref, DerefMut, Div, Mul, Neg, Sub, DivAssign};
 
 #[derive(Copy, Clone, Deserialize)]
 #[repr(C)]
@@ -19,6 +20,12 @@ impl Deref for Vector2f {
 #[derive(Copy, Clone, Deserialize, Debug)]
 #[repr(C)]
 pub struct Vector3f([FloatT; 3]);
+
+impl Sum for Vector3f {
+    fn sum<I: Iterator<Item = Vector3f>>(iter: I) -> Self {
+        iter.fold(Vector3f::empty(), |sum, x| sum + x)
+    }
+}
 
 impl Display for Vector3f {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
@@ -145,6 +152,14 @@ impl Div for Vector3f {
 
     fn div(self, rhs: Self) -> Self::Output {
         Vector3f::new([self[0] / rhs[0], self[1] / rhs[1], self[2] / rhs[2]])
+    }
+}
+
+impl DivAssign<FloatT> for Vector3f {
+    fn div_assign(&mut self, rhs: FloatT) {
+        self[0] /= rhs;
+        self[1] /= rhs;
+        self[2] /= rhs;
     }
 }
 
