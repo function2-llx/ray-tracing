@@ -166,11 +166,11 @@
             {
                 "shape": {
                     "Sphere": {
-                        "center": [0, 450, 0],
-                        "radius": 40
+                        "center": [0, 520, 0],
+                        "radius": 100
                     }
                 },
-                "flux": [50, 50, 50],
+                "flux": [300000, 300000, 300000],
                 "material": {
                     "texture": {
                         "Pure": [0, 0, 0]
@@ -195,7 +195,7 @@
     },
     "renderer": {
         "PPM": {
-            "pa": 0.1,
+            "pa": 0.3,
             "photon_num": 1000000,
             "init_radius": 10,
             "alpha": 0.1

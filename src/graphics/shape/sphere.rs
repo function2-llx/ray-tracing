@@ -1,7 +1,7 @@
 use serde::Deserialize;
 
 use crate::graphics::material::{Material, Surface, Texture};
-use crate::graphics::shape::{rand_sphere, RandOut};
+use crate::graphics::shape::{rand_sphere, RandOut, rand_semisphere};
 use crate::graphics::{Hit, HitTemp, Hittable, Shape, TextureMap};
 use crate::math::vector::{Vector2f, Vector3f};
 use crate::math::{FloatT, Ray};
@@ -15,8 +15,9 @@ pub struct Sphere {
 
 impl RandOut for Sphere {
     fn rand_out(&self, rng: &mut ThreadRng) -> Ray {
-        let dir = rand_sphere(rng);
-        Ray::new(self.center + self.radius * dir, dir)
+        let normal = rand_sphere(rng);
+        let pos = self.center + self.radius * normal;
+        Ray::new(pos, rand_semisphere(&normal, rng))
     }
 }
 
