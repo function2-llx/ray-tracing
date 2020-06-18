@@ -131,7 +131,7 @@ impl PT {
 }
 
 impl Render for PT {
-    fn render(&self, scene: &Scene, camera: &Camera, path: &str) {
+    fn render(&self, scene: &Scene, camera: &Camera, name: &str) {
         let image = Mutex::new(Image::empty(camera.w, camera.h));
         let progress_bar = Mutex::new(ProgressBar::new((camera.w * camera.h) as u64));
         let mut pixels = vec![];
@@ -160,6 +160,6 @@ impl Render for PT {
             progress_bar.lock().unwrap().inc();
         });
         progress_bar.lock().unwrap().finish_println("done\n");
-        image.lock().unwrap().dump(path, true);
+        image.lock().unwrap().dump(name, true);
     }
 }

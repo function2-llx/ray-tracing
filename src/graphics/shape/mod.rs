@@ -31,8 +31,8 @@ impl RandOut for Shape {
 pub fn rand_sphere(rng: &mut ThreadRng) -> Vector3f {
     let theta = rng.gen_range(0.0, 2.0 * PI);
     let phi = rng.gen_range(0.0, PI);
-    let cos_phi = phi.cos();
-    Vector3f::new([cos_phi * theta.cos(), cos_phi * theta.sin(), phi.sin()])
+    let sin_phi = phi.sin();
+    Vector3f::new([sin_phi * theta.cos(), sin_phi * theta.sin(), phi.cos()])
 }
 
 // z: normal
@@ -40,11 +40,13 @@ pub fn rand_semisphere(z: &Vector3f, rng: &mut ThreadRng) -> Vector3f {
     // 以 normal 为 z 轴随便建个单位正交坐标系
     let x = z.get_orthogonal();
     let y = Vector3f::cross(z, &x);
+
     // 在半球面上选一个点
     let theta = rng.gen_range(ZERO, 2.0 * PI);
     let phi = rng.gen_range(ZERO, PI / 2.0);
+    let sin_phi = phi.sin();
     Matrix3::from_vectors([x, y, *z], true)
-        * Vector3f::new([phi.cos() * theta.cos(), phi.cos() * theta.sin(), phi.sin()])
+        * Vector3f::new([sin_phi * theta.cos(), sin_phi * theta.sin(), phi.cos()])
 }
 
 pub trait RandOut {

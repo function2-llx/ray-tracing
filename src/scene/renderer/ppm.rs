@@ -6,7 +6,7 @@ use rayon::prelude::*;
 use serde::Deserialize;
 
 use crate::graphics::material::Surface;
-use crate::graphics::shape::RandOut;
+use crate::graphics::shape::{RandOut, rand_semisphere};
 use crate::graphics::{Color, Hit};
 use crate::math::matrix::Matrix3;
 use crate::math::vector::Vector3f;
@@ -15,6 +15,7 @@ use crate::scene::{renderer::get_n, Camera, Render, Scene};
 use crate::utils::{kdtree, Image, Positionable};
 use std::cmp::min;
 use std::time::Instant;
+use std::ptr::drop_in_place;
 
 #[derive(Deserialize)]
 pub struct PPM {
@@ -83,13 +84,16 @@ impl PPM {
         ray: Ray,
         n_stack: Vec<FloatT>,
         pixel: (usize, usize),
+        depth: usize,
         mut weight: Color,
         view_points: &mut Vec<ViewPoint>,
         rng: &mut ThreadRng,
     ) -> Color {
         // 俄罗斯赌轮，防止无限递归
-        if rng.gen_range(0.0, 1.0) < self.pa {
-            return scene.env;
+        if depth > 2 {
+            if rng.gen_range(0.0, 1.0) < self.pa {
+                return scene.env;
+            }
         }
         if let Some(Hit {
             pos,
@@ -129,6 +133,7 @@ impl PPM {
                                 ),
                                 n_stack.clone(),
                                 pixel,
+                                depth + 1,
                                 weight,
                                 view_points,
                                 rng,
@@ -158,6 +163,7 @@ impl PPM {
                                     ),
                                     n_stack.clone(),
                                     pixel,
+                                    depth + 1,
                                     weight * re,
                                     view_points,
                                     rng,
@@ -173,6 +179,7 @@ impl PPM {
                                         Ray::new(pos, t),
                                         new_stack,
                                         pixel,
+                                        depth + 1,
                                         weight * tr,
                                         view_points,
                                         rng,
@@ -188,6 +195,7 @@ impl PPM {
                                     ),
                                     n_stack.clone(),
                                     pixel,
+                                    depth + 1,
                                     weight * re,
                                     view_points,
                                     rng,
@@ -206,11 +214,14 @@ impl PPM {
         ray: Ray,
         n_stack: Vec<FloatT>,
         mut flux: Color,
+        depth: usize,
         photons: &mut Vec<Photon>,
         rng: &mut ThreadRng,
     ) {
-        if rng.gen_range(0.0, 1.0) < self.pa {
-            return;
+        if depth > 2 {
+            if rng.gen_range(0.0, 1.0) < self.pa {
+                return;
+            }
         }
         if let Some(Hit {
             pos,
@@ -229,6 +240,7 @@ impl PPM {
                         flux,
                         dir: ray.direction,
                     });
+                    self.photon_tracing(scene, Ray::new(pos, rand_semisphere(&normal, rng)), n_stack.clone(), flux * object.color_at(pos), depth + 1, photons, rng);
                 }
                 Surface::Specular => {
                     self.photon_tracing(
@@ -239,6 +251,7 @@ impl PPM {
                         ),
                         n_stack.clone(),
                         flux * object.color_at(pos),
+                        depth + 1,
                         photons,
                         rng,
                     );
@@ -266,6 +279,7 @@ impl PPM {
                             ),
                             n_stack.clone(),
                             flux * re,
+                            depth + 1,
                             photons,
                             rng,
                         );
@@ -280,6 +294,7 @@ impl PPM {
                             Ray::new(pos, t),
                             new_stack,
                             flux * tr,
+                            depth + 1,
                             photons,
                             rng,
                         );
@@ -293,6 +308,7 @@ impl PPM {
                             ),
                             n_stack.clone(),
                             flux * re,
+                            depth + 1,
                             photons,
                             rng,
                         );
@@ -304,7 +320,7 @@ impl PPM {
 }
 
 impl Render for PPM {
-    fn render(&self, scene: &Scene, camera: &Camera, path: &str) {
+    fn render(&self, scene: &Scene, camera: &Camera, name: &str) {
         let mut pixels = vec![];
         for i in 0..camera.w {
             for j in 0..camera.h {
@@ -330,6 +346,7 @@ impl Render for PPM {
                             *ray,
                             vec![scene.n],
                             (i, j),
+                            0,
                             Color::new([1.0, 1.0, 1.0]),
                             &mut cur,
                             &mut rng,
@@ -372,6 +389,7 @@ impl Render for PPM {
                                 ray,
                                 vec![scene.n],
                                 flux,
+                                0,
                                 &mut cur,
                                 &mut rng,
                             );
@@ -407,7 +425,7 @@ impl Render for PPM {
                     );
                 });
 
-            image.lock().unwrap().dump(path, true);
+            image.lock().unwrap().dump(name, true);
             println!("image updated");
             println!("iteration elapsed: {}ms", now.elapsed().as_millis());
         }

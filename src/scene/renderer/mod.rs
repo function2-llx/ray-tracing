@@ -13,7 +13,7 @@ pub use pt::*;
 use rand::prelude::*;
 
 pub trait Render {
-    fn render(&self, scene: &Scene, camera: &Camera, path: &str);
+    fn render(&self, scene: &Scene, camera: &Camera, name: &str);
     fn refractive(
         &self,
         i: &Vector3f,
@@ -55,11 +55,11 @@ pub enum Renderer {
 }
 
 impl Renderer {
-    pub fn render(&self, scene: &Scene, camera: &Camera, path: &str) {
+    pub fn render(&self, scene: &Scene, camera: &Camera, name: &str) {
         use Renderer::*;
         match self {
-            PT(pt) => pt.render(scene, camera, path),
-            PPM(ppm) => ppm.render(scene, camera, path),
+            PT(pt) => pt.render(scene, camera, name),
+            PPM(ppm) => ppm.render(scene, camera, name),
         }
     }
 }

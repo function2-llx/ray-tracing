@@ -11,6 +11,7 @@ use crate::utils::trans;
 use image::{open, GenericImageView};
 use std::mem::{swap, MaybeUninit};
 use std::sync::Mutex;
+use std::path::Path;
 
 #[derive(Clone)]
 pub struct Image {
@@ -90,52 +91,30 @@ impl Image {
     }
 
     // rotate: 是否旋转 180 度
-    pub fn dump(&self, path: &str, rotate: bool) {
-        // TODO: infer format from path
-        use Format::*;
-        if let Some(format) = infer_format(path) {
-            match format {
-                PPM => self.dump_ppm(path, rotate),
-                JPG | PNG => {
-                    // image crate supports jpg and png
-                    println!("Writing to {}", path);
-                    let mut buf = image::ImageBuffer::new(self.w as u32, self.h as u32);
-                    for x in 0..self.w {
-                        for y in 0..self.h {
-                            let t = if rotate {
-                                self.at(self.w - x - 1, self.h - y - 1)
-                            } else {
-                                self.at(x, y)
-                            };
-                            buf.put_pixel(
-                                x as u32,
-                                y as u32,
-                                image::Rgb([trans(t[0]), trans(t[1]), trans(t[2])]),
-                            )
-                        }
-                    }
-                    buf.save(&path)
-                        .expect(&format!("cannot save {:?} to {}", format, path));
-                    println!("...done");
-                }
-            }
-        } else {
-            println!("format not supported: {}", path);
+    pub fn dump(&self, name: &str, rotate: bool) {
+        let path = format!("output/{}.png", name);
+        let back_up = format!("output/{}-bk.png", name);
+        if Path::new(&path).exists() {
+            std::fs::copy(&path, back_up);
         }
-    }
-
-    // rotate: unimplemented
-    fn dump_ppm(&self, path: &str, _rotate: bool) {
-        println!("Writing to {}", path);
-        let errmsg = &format!("cannot save PPM to {}", path);
-        let mut file = File::create(path).expect(errmsg);
-        let mut data = String::new();
-        data.push_str(&format!("P3\n{} {}\n255\n", self.w, self.h));
-        self.data.iter().for_each(|t| {
-            data.push_str(&format!("{} {} {} ", trans(t[0]), trans(t[1]), trans(t[2])));
-        });
-        file.write_all(data.as_bytes()).expect(errmsg);
-        file.flush().expect(errmsg);
+        println!("Writing to {}", &path);
+        let mut buf = image::ImageBuffer::new(self.w as u32, self.h as u32);
+        for x in 0..self.w {
+            for y in 0..self.h {
+                let t = if rotate {
+                    self.at(self.w - x - 1, self.h - y - 1)
+                } else {
+                    self.at(x, y)
+                };
+                buf.put_pixel(
+                    x as u32,
+                    y as u32,
+                    image::Rgb([trans(t[0]), trans(t[1]), trans(t[2])]),
+                )
+            }
+        }
+        buf.save(&path)
+            .expect(&format!("cannot save to {}", path));
         println!("...done");
     }
 

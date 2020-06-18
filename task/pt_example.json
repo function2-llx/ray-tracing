@@ -199,6 +199,5 @@
             "max_depth": 5
         }
     },
-    "save_path": "output/example.png",
     "num_threads": 40
 }

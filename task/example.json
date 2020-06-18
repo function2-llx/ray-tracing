@@ -201,6 +201,5 @@
             "alpha": 0.1
         }
     },
-    "save_path": "output/example.png",
     "num_threads": 5
 }
