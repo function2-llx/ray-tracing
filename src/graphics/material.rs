@@ -22,5 +22,5 @@ pub enum Surface {
 #[derive(Deserialize, Debug)]
 pub struct Material {
     pub texture: Texture,
-    pub optics: Surface,
+    pub surface: Surface,
 }

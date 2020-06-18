@@ -16,7 +16,7 @@ pub fn sqr(x: FloatT) -> FloatT {
     x * x
 }
 
-#[derive(Copy, Clone, Deserialize)]
+#[derive(Copy, Clone, Deserialize, Debug)]
 pub struct Ray {
     pub origin: Vector3f,
     pub direction: Vector3f,

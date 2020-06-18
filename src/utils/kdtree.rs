@@ -1,12 +1,10 @@
 use crate::math::vector::Vector3f;
-use crate::math::{FloatT, INF, ZERO};
+use crate::math::{sqr, FloatT, ZERO};
 use crate::utils::Positionable;
-use serde::de::Unexpected::Float;
 use std::cmp::Ordering;
-use std::collections::{BTreeSet, BinaryHeap};
-use std::mem::swap;
+use std::collections::BinaryHeap;
 
-struct Node<Item: Positionable + Clone> {
+pub struct Node<Item: Positionable + Clone> {
     pub item: Item,
     pub dim: usize, // 划分维度
     pub min: Vector3f,
@@ -15,25 +13,31 @@ struct Node<Item: Positionable + Clone> {
     pub r: Option<Box<Node<Item>>>,
 }
 
-struct Data(FloatT, Vector3f);
+struct Data<T>(FloatT, T);
 
-impl PartialEq for Data {
+impl<T> Data<T> {
+    pub fn get(self) -> T {
+        self.1
+    }
+}
+
+impl<T> PartialEq for Data<T> {
     fn eq(&self, other: &Self) -> bool {
         self.0 == other.0
     }
 }
 
-impl Eq for Data {
+impl<T> Eq for Data<T> {
     // ?
 }
 
-impl PartialOrd for Data {
+impl<T> PartialOrd for Data<T> {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         self.0.partial_cmp(&other.0)
     }
 }
 
-impl Ord for Data {
+impl<T> Ord for Data<T> {
     fn cmp(&self, other: &Self) -> Ordering {
         self.0.partial_cmp(&other.0).unwrap()
     }
@@ -43,6 +47,10 @@ impl<Item: Positionable + Clone> Positionable for Node<Item> {
     fn pos(&self) -> Vector3f {
         self.item.pos()
     }
+}
+
+pub fn new<Item: Positionable + Clone>(mut items: Vec<Item>) -> Box<Node<Item>> {
+    Node::<Item>::new(items)
 }
 
 impl<'a, Item: Positionable + Clone> Node<Item> {
@@ -112,69 +120,106 @@ impl<'a, Item: Positionable + Clone> Node<Item> {
         }
     }
 
-    pub fn knn(&self, pos: &Vector3f, k: usize) -> Vec<Vector3f> {
+    pub fn knn(&self, pos: &Vector3f, k: usize) -> Vec<Item> {
         if k == 0 {
             panic!("k must be greater than 0");
         }
         let mut cur = BinaryHeap::new();
         self.knn_impl(pos, k, &mut cur);
-        cur.iter().map(|x| x.1).collect()
+        let mut ret = vec![];
+        ret.reserve(cur.len());
+        for x in cur {
+            ret.push(x.get());
+        }
+        ret
     }
 
-    // 估计 pos 到自身的最远距离的平方
-    fn estimate_max(&self, pos: &Vector3f) -> FloatT {
-        let p = [self.min, self.max];
-        let mut max = ZERO;
-        for i in 0..2 {
-            for j in 0..2 {
-                for k in 0..2 {
-                    max = max.max((*pos - Vector3f::new([p[i][0], p[j][1], p[k][2]])).length2());
-                }
+    fn contains(&self, pos: &Vector3f) -> bool {
+        for i in 0..3 {
+            if self.min[i] > pos[i] || pos[i] > self.max[i] {
+                return false;
             }
         }
-        max
+        true
     }
 
-    fn knn_impl(&self, pos: &Vector3f, k: usize, cur: &mut BinaryHeap<Data>) {
+    // 返回所有 |x - pos| <= r 的点
+    pub fn within(&self, pos: &Vector3f, r: FloatT) -> Vec<Item> {
+        let mut results = vec![];
+        self.within_impl(pos, r * r, &mut results);
+        results
+    }
+
+    fn within_impl(&self, pos: &Vector3f, r2: FloatT, results: &mut Vec<Item>) {
+        if (self.pos() - *pos).length2() <= r2 {
+            results.push(self.item.clone());
+        }
+        if let Some(l) = &self.l {
+            if l.lower_bound(pos) <= r2 {
+                l.within_impl(pos, r2, results);
+            }
+        }
+        if let Some(r) = &self.r {
+            if r.lower_bound(pos) <= r2 {
+                r.within_impl(pos, r2, results);
+            }
+        }
+    }
+
+    // 估计 pos 到自身区域内的点的距离平方的下界
+    fn lower_bound(&self, pos: &Vector3f) -> FloatT {
+        let p = [self.min, self.max];
+        let mut lb = ZERO;
+        for i in 0..3 {
+            if pos[i] < self.min[i] {
+                lb += sqr(self.min[i] - pos[i]);
+            } else if pos[i] > self.max[i] {
+                lb += sqr(self.max[i] - pos[i]);
+            }
+        }
+        lb
+    }
+
+    fn knn_impl(&self, pos: &Vector3f, k: usize, cur: &mut BinaryHeap<Data<Item>>) {
         let dis2 = (self.pos() - *pos).length2();
         if cur.len() < k {
-            cur.push(Data(dis2, self.pos()));
+            cur.push(Data(dis2, self.item.clone()));
         } else {
             if let Some(data) = cur.peek() {
                 if data.0 > dis2 {
                     cur.pop();
-                    cur.push(Data(dis2, self.pos()));
+                    cur.push(Data(dis2, self.item.clone()));
                 }
             }
         }
 
         match (&self.l, &self.r) {
             (Some(l), Some(r)) => {
-                let maxl = l.estimate_max(pos);
-                let maxr = r.estimate_max(pos);
-                if maxl < maxr {
-                    if k < cur.len() || maxl < cur.peek().unwrap().0 {
+                let lower_bound_l = l.lower_bound(pos);
+                let lower_bound_r = r.lower_bound(pos);
+                if lower_bound_l < lower_bound_r {
+                    if k < cur.len() || lower_bound_l < cur.peek().unwrap().0 {
                         l.knn_impl(pos, k, cur);
-                        if k < cur.len() || maxr < cur.peek().unwrap().0 {
+                        if k < cur.len() || lower_bound_r < cur.peek().unwrap().0 {
                             r.knn_impl(pos, k, cur);
                         }
                     }
                 } else {
-                    if k < cur.len() || maxr < cur.peek().unwrap().0 {
+                    if k < cur.len() || lower_bound_r < cur.peek().unwrap().0 {
                         r.knn_impl(pos, k, cur);
-                        if k < cur.len() || maxl < cur.peek().unwrap().0 {
+                        if k < cur.len() || lower_bound_l < cur.peek().unwrap().0 {
                             l.knn_impl(pos, k, cur);
                         }
                     }
                 }
             }
             (Some(l), None) => {
-                if k < cur.len() || l.estimate_max(pos) < cur.peek().unwrap().0 {
+                if k < cur.len() || l.lower_bound(pos) < cur.peek().unwrap().0 {
                     l.knn_impl(pos, k, cur);
                 }
             }
             (None, Some(r)) => {
-                if k < cur.len() || r.estimate_max(pos) < cur.peek().unwrap().0 {
+                if k < cur.len() || r.lower_bound(pos) < cur.peek().unwrap().0 {
                     r.knn_impl(pos, k, cur);
                 }
             }

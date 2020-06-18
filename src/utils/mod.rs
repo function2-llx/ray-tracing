@@ -12,10 +12,9 @@ pub fn trans(x: FloatT) -> u8 {
 }
 
 mod image;
-mod kdtree;
+pub mod kdtree;
 
 pub use self::image::*;
-pub use kdtree::*;
 
 // shoot scene with camera (render with renderer), save to save_path
 #[derive(Deserialize)]
@@ -39,8 +38,8 @@ impl Task {
             .build()
             .unwrap()
             .install(|| {
-                let image = self.renderer.render(&self.scene, &self.camera);
-                image.dump(&self.save_path, true);
+                self.renderer
+                    .render(&self.scene, &self.camera, &self.save_path);
             });
     }
 }

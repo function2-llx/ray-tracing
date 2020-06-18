@@ -1,8 +1,11 @@
 use serde::{Deserialize, Deserializer};
 
+use crate::graphics::shape::{rand_sphere, RandOut};
 use crate::graphics::HitTemp;
 use crate::math::vector::{Vector2f, Vector3f};
 use crate::math::{FloatT, Ray};
+use rand::prelude::ThreadRng;
+use rand::Rng;
 
 #[derive(Debug)]
 pub struct Plane {
@@ -11,6 +14,17 @@ pub struct Plane {
     origin: Vector3f, // 等于 d * normal
     x: Vector3f,      // x, y: 根据 normal 建个系
     y: Vector3f,
+}
+
+impl RandOut for Plane {
+    fn rand_out(&self, rng: &mut ThreadRng) -> Ray {
+        Ray::new(
+            self.origin
+                + rng.gen_range(-1000.0, 1000.0) * self.x
+                + rng.gen_range(-1000.0, 1000.0) * self.y,
+            rand_sphere(rng),
+        )
+    }
 }
 
 impl<'de> Deserialize<'de> for Plane {

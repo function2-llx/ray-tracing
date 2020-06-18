@@ -1,9 +1,12 @@
 use serde::Deserialize;
 
 use crate::graphics::{Hit, HitTemp, Hittable, TextureMap};
+use crate::math::matrix::Matrix3;
 use crate::math::vector::Vector3f;
-use crate::math::{FloatT, Ray};
+use crate::math::{FloatT, Ray, PI, ZERO};
 pub use plane::*;
+use rand::prelude::ThreadRng;
+use rand::Rng;
 pub use sphere::*;
 
 mod plane;
@@ -13,6 +16,39 @@ mod sphere;
 pub enum Shape {
     Sphere(Sphere),
     Plane(Plane),
+}
+
+impl RandOut for Shape {
+    fn rand_out(&self, rng: &mut ThreadRng) -> Ray {
+        use Shape::*;
+        match self {
+            Sphere(sphere) => sphere.rand_out(rng),
+            Plane(plane) => plane.rand_out(rng),
+        }
+    }
+}
+
+pub fn rand_sphere(rng: &mut ThreadRng) -> Vector3f {
+    let theta = rng.gen_range(0.0, 2.0 * PI);
+    let phi = rng.gen_range(0.0, PI);
+    let cos_phi = phi.cos();
+    Vector3f::new([cos_phi * theta.cos(), cos_phi * theta.sin(), phi.sin()])
+}
+
+// z: normal
+pub fn rand_semisphere(z: &Vector3f, rng: &mut ThreadRng) -> Vector3f {
+    // 以 normal 为 z 轴随便建个单位正交坐标系
+    let x = z.get_orthogonal();
+    let y = Vector3f::cross(z, &x);
+    // 在半球面上选一个点
+    let theta = rng.gen_range(ZERO, 2.0 * PI);
+    let phi = rng.gen_range(ZERO, PI / 2.0);
+    Matrix3::from_vectors([x, y, *z], true)
+        * Vector3f::new([phi.cos() * theta.cos(), phi.cos() * theta.sin(), phi.sin()])
+}
+
+pub trait RandOut {
+    fn rand_out(&self, rng: &mut ThreadRng) -> Ray;
 }
 
 impl Hittable for Shape {

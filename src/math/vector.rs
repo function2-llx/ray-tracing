@@ -3,7 +3,7 @@ use std::fmt::{Display, Formatter};
 use crate::math::FloatT;
 use serde::Deserialize;
 use std::iter::Sum;
-use std::ops::{Add, AddAssign, Deref, DerefMut, Div, DivAssign, Mul, Neg, Sub};
+use std::ops::{Add, AddAssign, Deref, DerefMut, Div, DivAssign, Mul, MulAssign, Neg, Sub};
 
 #[derive(Copy, Clone, Deserialize)]
 #[repr(C)]
@@ -37,8 +37,11 @@ impl Vector3f {
     pub fn new(x: [FloatT; 3]) -> Self {
         Vector3f(x)
     }
-    pub fn empty() -> Self {
-        Vector3f::full(0.0)
+    pub const fn empty() -> Self {
+        Vector3f([0.0, 0.0, 0.0])
+    }
+    pub const fn ones() -> Self {
+        Vector3f([1.0, 1.0, 1.0])
     }
 
     pub fn full(x: FloatT) -> Self {
@@ -66,6 +69,10 @@ impl Vector3f {
 
     pub fn normalized(&self) -> Self {
         *self / self.length() as FloatT
+    }
+
+    pub fn norm1(&self) -> FloatT {
+        self[0].abs() + self[1].abs() + self[2].abs()
     }
 
     // pub fn standardized(&self) -> Self {
@@ -128,6 +135,22 @@ impl Mul for Vector3f {
 
     fn mul(self, rhs: Self) -> Self::Output {
         Vector3f::new([self[0] * rhs[0], self[1] * rhs[1], self[2] * rhs[2]])
+    }
+}
+
+impl MulAssign for Vector3f {
+    fn mul_assign(&mut self, rhs: Self) {
+        self[0] *= rhs[0];
+        self[1] *= rhs[1];
+        self[2] *= rhs[2];
+    }
+}
+
+impl MulAssign<FloatT> for Vector3f {
+    fn mul_assign(&mut self, rhs: f64) {
+        self[0] *= rhs;
+        self[1] *= rhs;
+        self[2] *= rhs;
     }
 }
 

@@ -1,14 +1,16 @@
 use serde::Deserialize;
 
 use crate::graphics::material::{Material, Texture};
-use crate::graphics::shape::Shape;
+use crate::graphics::shape::{RandOut, Shape};
 use crate::math::vector::{Vector2f, Vector3f};
 use crate::math::{FloatT, Ray};
+use rand::prelude::ThreadRng;
 
 pub mod material;
 pub mod shape;
 
 pub type Color = Vector3f;
+
 // t, normal
 pub type HitTemp = (FloatT, Vector3f);
 
@@ -33,7 +35,13 @@ pub struct Object {
     shape: Shape,
     pub material: Material,
     /// 物体自身发光
-    pub emission: Color,
+    pub flux: Color,
+}
+
+impl RandOut for Object {
+    fn rand_out(&self, rng: &mut ThreadRng) -> Ray {
+        self.shape.rand_out(rng)
+    }
 }
 
 impl Hittable for Object {

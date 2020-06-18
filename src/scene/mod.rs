@@ -18,7 +18,7 @@ pub use renderer::*;
 
 #[derive(Deserialize, Debug)]
 pub struct Scene {
-    objects: Vec<Object>,
+    pub objects: Vec<Object>,
     /// 环境光
     env: Vector3f,
     /// 环境折射率

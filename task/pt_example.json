@@ -166,11 +166,11 @@
             {
                 "shape": {
                     "Sphere": {
-                        "center": [0, 450, 0],
-                        "radius": 40
+                        "center": [0, 520, 0],
+                        "radius": 100
                     }
                 },
-                "flux": [50, 50, 50],
+                "flux": [5, 5, 5],
                 "material": {
                     "texture": {
                         "Pure": [0, 0, 0]
@@ -194,13 +194,11 @@
         "anti_alias": 5
     },
     "renderer": {
-        "PPM": {
-            "pa": 0.1,
-            "photon_num": 1000000,
-            "init_radius": 10,
-            "alpha": 0.1
+        "PT": {
+            "samples": 2000,
+            "max_depth": 5
         }
     },
     "save_path": "output/example.png",
-    "num_threads": 5
+    "num_threads": 40
 }

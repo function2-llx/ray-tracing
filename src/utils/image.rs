@@ -5,9 +5,12 @@ use std::io::Write;
 use serde::{Deserialize, Deserializer};
 
 use crate::graphics::Color;
+use crate::math::vector::Vector3f;
 use crate::math::FloatT;
 use crate::utils::trans;
 use image::{open, GenericImageView};
+use std::mem::{swap, MaybeUninit};
+use std::sync::Mutex;
 
 #[derive(Clone)]
 pub struct Image {
@@ -42,6 +45,30 @@ fn infer_format(path: &str) -> Option<Format> {
 }
 
 impl Image {
+    pub fn index(&self, x: usize, y: usize) -> usize {
+        self.w * y + x
+    }
+
+    pub fn lr(&mut self) {
+        for i in 0..self.w / 2 {
+            for j in 0..self.h {
+                let a = self.index(i, j);
+                let b = self.index(self.w - i - 1, j);
+                self.data.swap(a, b);
+            }
+        }
+    }
+
+    pub fn ud(&mut self) {
+        for i in 0..self.w {
+            for j in 0..self.h / 2 {
+                let a = self.index(i, j);
+                let b = self.index(i, self.h - j - 1);
+                self.data.swap(a, b);
+            }
+        }
+    }
+
     pub fn empty(w: usize, h: usize) -> Image {
         Image {
             w,
@@ -56,6 +83,10 @@ impl Image {
 
     pub fn set(&mut self, x: usize, y: usize, color: Color) {
         self.data[y * self.w + x] = color;
+    }
+
+    pub fn add(&mut self, x: usize, y: usize, color: Color) {
+        self.data[y * self.w + x] += color;
     }
 
     // rotate: 是否旋转 180 度
@@ -151,20 +182,10 @@ impl<'de> Deserialize<'de> for Image {
         let info = ImageInfo::deserialize(deserializer)?;
         let mut image = Image::load(&info.path);
         if info.lr {
-            let tmp = image.clone();
-            for i in 0..image.w {
-                for j in 0..image.h {
-                    image.set(i, j, tmp.at(image.w - i - 1, j));
-                }
-            }
+            image.lr();
         }
         if info.ud {
-            let tmp = image.clone();
-            for i in 0..image.w {
-                for j in 0..image.h {
-                    image.set(i, j, tmp.at(i, image.h - j - 1));
-                }
-            }
+            image.lr();
         }
         Ok(image)
     }
