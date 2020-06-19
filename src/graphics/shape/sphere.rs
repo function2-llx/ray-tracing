@@ -33,11 +33,19 @@ impl Hittable for Sphere {
             d = d.sqrt();
             let mut t = (-b - d) / ray.direction.length();
             if t > t_min {
-                Some((t, (ray.at(t) - self.center) / self.radius))
+                Some(HitTemp {
+                    t,
+                    normal: (ray.at(t) - self.center) / self.radius,
+                    uv: None,
+                })
             } else {
                 t = (-b + d) / ray.direction.length();
                 if t > t_min {
-                    Some((t, (ray.at(t) - self.center) / self.radius))
+                    Some(HitTemp {
+                        t,
+                        normal: (ray.at(t) - self.center) / self.radius,
+                        uv: None,
+                    })
                 } else {
                     None
                 }
@@ -47,7 +55,13 @@ impl Hittable for Sphere {
 }
 
 impl TextureMap for Sphere {
-    fn texture_map(&self, pos: Vector3f, w: usize, h: usize) -> (usize, usize) {
+    fn texture_map(
+        &self,
+        pos: Vector3f,
+        uv: Option<(FloatT, FloatT)>,
+        w: usize,
+        h: usize,
+    ) -> (usize, usize) {
         unimplemented!()
     }
 }

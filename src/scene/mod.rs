@@ -4,7 +4,7 @@ use serde::Deserialize;
 use serde_json::Value;
 
 use crate::graphics::material::{Material, Surface};
-use crate::graphics::{Color, Hittable};
+use crate::graphics::{Color, HitTemp, Hittable};
 use crate::graphics::{Hit, Object};
 use crate::math::vector::Vector3f;
 use crate::math::{FloatT, Ray};
@@ -27,19 +27,19 @@ pub struct Scene {
 
 impl Scene {
     pub fn hit(&self, ray: &Ray, t_min: FloatT) -> Option<Hit> {
-        if let Some((object, t, normal)) = self
+        if let Some((object, t, normal, uv)) = self
             .objects
             .iter()
             .filter_map(|object| {
-                if let Some((t, normal)) = object.hit(ray, t_min) {
-                    Some((object, t, normal))
+                if let Some(HitTemp { t, normal, uv }) = object.hit(ray, t_min) {
+                    Some((object, t, normal, uv))
                 } else {
                     None
                 }
             })
-            .min_by(|(_, t1, _), (_, t2, _)| t1.partial_cmp(t2).unwrap())
+            .min_by(|(_, t1, _, _), (_, t2, _, _)| t1.partial_cmp(t2).unwrap())
         {
-            Some(object.make_hit(ray.at(t), normal))
+            Some(object.make_hit(ray.at(t), normal, uv))
         } else {
             None
         }

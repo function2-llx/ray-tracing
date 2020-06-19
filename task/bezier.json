@@ -102,7 +102,7 @@
                         "radius": 1
                     }
                 },
-                "flux": [200000, 200000, 200000],
+                "flux": [250000, 250000, 250000],
                 "material": {
                     "texture": {
                         "Pure": [0, 0, 0]
@@ -122,15 +122,63 @@
                             [40, 200],
                             [80, 420]
                         ],
-                        "shift": [-200, -500, 100]
+                        "shift": [-400, -500, 100]
                     }
                 },
                 "material": {
                     "texture": {
-                        "Pure": [0.5, 0.6, 0.7]
+                        "Image": {
+                            "path": "asset/vase.jpg",
+                            "lr": false,
+                            "ud": false
+                        }
                     },
                     "surface": {
                         "Diffuse": null
+                    }
+                },
+                "flux": [0, 0, 0]
+            },
+            {
+                "shape": {
+                    "Bezier": {
+                        "points": [
+                            [0.0, 0.0],
+                            [200, 0],
+                            [200, 200],
+                            [0, 380]
+                        ],
+                        "shift": [400, -500, 200]
+                    }
+                },
+                "material": {
+                    "texture": {
+                        "Pure": [1, 1, 1]
+                    },
+                    "surface": {
+                        "Specular": null
+                    }
+                },
+                "flux": [0, 0, 0]
+            },
+            {
+                "shape": {
+                    "Bezier": {
+                        "points": [
+                            [0.0, 0.0],
+                            [200, 0],
+                            [200, 200],
+                            [0, 380]
+                        ],
+                        "shift": [200, -200, 0]
+                    }
+                },
+                "material": {
+                    "texture": {
+                        "Pure": [1, 1, 1]
+                    },
+                    "surface": {
+                        "Refractive": 1.5
                     }
                 },
                 "flux": [0, 0, 0]

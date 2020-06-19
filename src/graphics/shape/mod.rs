@@ -69,12 +69,18 @@ impl Hittable for Shape {
 }
 
 impl TextureMap for Shape {
-    fn texture_map(&self, pos: Vector3f, w: usize, h: usize) -> (usize, usize) {
+    fn texture_map(
+        &self,
+        pos: Vector3f,
+        uv: Option<(FloatT, FloatT)>,
+        w: usize,
+        h: usize,
+    ) -> (usize, usize) {
         use Shape::*;
         match self {
-            Sphere(sphere) => sphere.texture_map(pos, w, h),
-            Plane(plane) => plane.texture_map(pos, w, h),
-            Bezier(bezier) => unimplemented!(),
+            Sphere(sphere) => sphere.texture_map(pos, uv, w, h),
+            Plane(plane) => plane.texture_map(pos, uv, w, h),
+            Bezier(bezier) => bezier.texture_map(pos, uv, w, h),
         }
     }
 }

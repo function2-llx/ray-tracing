@@ -1,9 +1,10 @@
 use serde::{Deserialize, Deserializer};
 
-use crate::graphics::{HitTemp, Hittable, Bounding};
+use crate::graphics::{Bounding, HitTemp, Hittable, TextureMap};
 use crate::math::matrix::Matrix3;
 use crate::math::vector::Vector3f;
 use crate::math::{sqr, FloatT, Ray, EPS, PI};
+use image::math::utils::clamp;
 use rand::{thread_rng, Rng};
 
 #[derive(Debug)]
@@ -100,8 +101,23 @@ impl BezierRotate {
             bounding: Bounding {
                 min: Vector3f::new([-max_x, min_y, -max_x]) + shift,
                 max: Vector3f::new([max_x, max_y, max_x]) + shift,
-            }
+            },
         }
+    }
+}
+
+impl TextureMap for BezierRotate {
+    fn texture_map(
+        &self,
+        pos: Vector3f,
+        uv: Option<(FloatT, FloatT)>,
+        w: usize,
+        h: usize,
+    ) -> (usize, usize) {
+        let (u, v) = uv.unwrap();
+        assert!(0.0 <= u && u <= 1.0);
+        assert!(0.0 <= v && v <= 1.0);
+        ((w as FloatT * u) as usize, (h as FloatT * v) as usize)
     }
 }
 
@@ -111,7 +127,7 @@ impl<'de> Deserialize<'de> for BezierRotate {
         D: Deserializer<'de>,
     {
         #[derive(Deserialize)]
-        struct BezierRotateInfo{
+        struct BezierRotateInfo {
             pub points: Vec<(FloatT, FloatT)>,
             pub shift: Vector3f,
         };
@@ -136,15 +152,16 @@ impl Hittable for BezierRotate {
             direction: d,
         } = &ray;
         o -= self.shift;
+        let t1 = o.x() * d.y() - o.y() * d.x();
+        let t2 = o.z() * d.y() - o.y() * d.z();
         let a = sqr(d.x()) + sqr(d.z());
-        let b = 2.0
-            * ((o.x() * d.y() - o.y() * d.x()) * d.x() + (o.z() * d.y() - o.y() * d.z()) * d.z());
-        let c = sqr(o.x() * d.y() - o.y() * d.x()) + sqr(o.z() * d.y() - o.y() * d.z());
+        let b = 2.0 * (t1 * d.x() + t2 * d.z());
+        let c = sqr(t1) + sqr(t2);
         let w = -sqr(d.y());
         let solve = |mut t| {
             let (mut x, mut y) = self.curve.eval(t);
             let mut f = a * sqr(y) + b * y + c + w * sqr(x);
-            for _ in 0..20 {
+            for _ in 0..30 {
                 let (dx, dy) = self.curve.derivative(t);
                 let df = 2.0 * a * y * dy + b * dy + 2.0 * w * x * dx;
                 let s = f / df;
@@ -167,47 +184,66 @@ impl Hittable for BezierRotate {
                     }
                     lambda *= weight;
                 }
-                if f.abs() < 1e-8 {
+                if f.abs() < 1e-10 {
                     return Some(t);
                 }
             }
             None
         };
-        if let Some(t) = solve(thread_rng().gen_range(0.0, 1.0)) {
-            // println!("t: {}", t);
-            let k = if d.y().abs() > EPS {
-                (self.curve.y(t) - o.y()) / d.y()
-            } else {
-                let a = sqr(d.x()) + sqr(d.z());
-                let b = 2.0 * (o.x() * d.x() + o.z() * d.z());
-                let c = sqr(o.x()) + sqr(d.x()) - sqr(self.curve.x(t));
-                let delta = (sqr(b) - 4.0 * a * c).sqrt();
-                let k = (-b - delta) / (2.0 * a);
-                if k > k_min {
-                    k
+
+        let samples = self.curve.n;
+        let mut ans: Option<(FloatT, FloatT)> = None;
+        for i in 0..=samples {
+            if let Some(t) = solve(i as FloatT / samples as FloatT) {
+                let k = if d.y().abs() > EPS {
+                    (self.curve.y(t) - o.y()) / d.y()
                 } else {
-                    (-b + delta) / (2.0 * a)
+                    let a = sqr(d.x()) + sqr(d.z());
+                    let b = 2.0 * (o.x() * d.x() + o.z() * d.z());
+                    let c = sqr(o.x()) + sqr(d.x()) - sqr(self.curve.x(t));
+                    let delta = (sqr(b) - 4.0 * a * c).sqrt();
+                    let k = (-b - delta) / (2.0 * a);
+                    if k >= k_min {
+                        k
+                    } else {
+                        (-b + delta) / (2.0 * a)
+                    }
+                };
+                if k > k_min && (ans.is_none() || k < ans.unwrap().1) {
+                    ans = Some((t, k));
                 }
-            };
+            }
+        }
+        if let Some((t, k)) = ans {
             let x = self.curve.x(t);
-            let normal = if x.abs() > EPS {
+            if x.abs() > EPS {
                 let cos = (o.x() + k * d.x()) / x;
                 let sin = (o.z() + k * d.z()) / x;
                 let (x, y) = self.curve.normal(t);
-                Vector3f::new([x * cos, y, x * sin]).normalized()
-            } else {
-                // 面向数据 233
-                if t > 0.5 {
-                    Vector3f::new([0.0, 1.0, 0.0])
-                } else {
-                    Vector3f::new([0.0, -1.0, 0.0])
+                let normal = Vector3f::new([x * cos, y, x * sin]).normalized();
+                let mut u = clamp(cos, -1.0, 1.0).acos();
+                if sin < 0.0 {
+                    u += PI;
                 }
-            };
-
-            Some((k, normal))
+                Some(HitTemp {
+                    t: k,
+                    normal,
+                    uv: Some((u / (2.0 * PI), t)),
+                })
+            } else {
+                Some(HitTemp {
+                    t: k,
+                    // 面向数据 233
+                    normal: if t > 0.5 {
+                        Vector3f::new([0.0, 1.0, 0.0])
+                    } else {
+                        Vector3f::new([0.0, -1.0, 0.0])
+                    },
+                    uv: Some((0.0, 0.0)),
+                })
+            }
         } else {
             None
         }
     }
 }
-

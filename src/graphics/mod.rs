@@ -14,12 +14,17 @@ pub use bounding::*;
 
 pub type Color = Vector3f;
 
-// t, normal
-pub type HitTemp = (FloatT, Vector3f);
+pub struct HitTemp {
+    pub t: FloatT,
+    pub normal: Vector3f,
+    // 用于纹理映射
+    pub uv: Option<(FloatT, FloatT)>,
+}
 
 pub struct Hit<'a> {
     pub pos: Vector3f,
     pub normal: Vector3f,
+    pub uv: Option<(FloatT, FloatT)>,
     pub object: &'a Object,
 }
 
@@ -30,7 +35,13 @@ pub trait Hittable {
 
 trait TextureMap {
     /// map shape to w * h rectangle
-    fn texture_map(&self, pos: Vector3f, w: usize, h: usize) -> (usize, usize);
+    fn texture_map(
+        &self,
+        pos: Vector3f,
+        uv: Option<(FloatT, FloatT)>,
+        w: usize,
+        h: usize,
+    ) -> (usize, usize);
 }
 
 #[derive(Deserialize, Debug)]
@@ -54,19 +65,20 @@ impl Hittable for Object {
 }
 
 impl Object {
-    pub fn make_hit(&self, pos: Vector3f, normal: Vector3f) -> Hit {
+    pub fn make_hit(&self, pos: Vector3f, normal: Vector3f, uv: Option<(FloatT, FloatT)>) -> Hit {
         Hit {
             pos,
             normal,
+            uv,
             object: self,
         }
     }
 
-    pub fn color_at(&self, pos: Vector3f) -> Color {
+    pub fn color_at(&self, pos: Vector3f, uv: Option<(FloatT, FloatT)>) -> Color {
         match &self.material.texture {
             Texture::Pure(color) => *color,
             Texture::Image(image) => {
-                let (x, y) = self.shape.texture_map(pos, image.w, image.h);
+                let (x, y) = self.shape.texture_map(pos, uv, image.w, image.h);
                 image.at(x, y)
             }
         }

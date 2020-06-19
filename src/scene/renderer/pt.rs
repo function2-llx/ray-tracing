@@ -35,6 +35,7 @@ impl PT {
         if let Some(Hit {
             pos,
             mut normal,
+            uv,
             object,
         }) = scene.hit(&ray, EPS)
         {
@@ -123,7 +124,7 @@ impl PT {
                     }
                 }
             };
-            object.flux + object.color_at(pos) * illumination()
+            object.flux + object.color_at(pos, uv) * illumination()
         } else {
             scene.env
         }

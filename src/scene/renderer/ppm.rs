@@ -90,7 +90,7 @@ impl PPM {
         rng: &mut ThreadRng,
     ) -> Color {
         // 俄罗斯赌轮，防止无限递归
-        if depth > 2 {
+        if depth > 4 {
             if rng.gen_range(0.0, 1.0) < self.pa {
                 return scene.env;
             }
@@ -98,10 +98,11 @@ impl PPM {
         if let Some(Hit {
             pos,
             mut normal,
+            uv,
             object,
         }) = scene.hit(&ray, EPS)
         {
-            let color = object.color_at(pos);
+            let color = object.color_at(pos, uv);
             weight *= color;
             object.flux
                 + color
@@ -226,6 +227,7 @@ impl PPM {
         if let Some(Hit {
             pos,
             mut normal,
+            uv,
             object,
         }) = scene.hit(&ray, EPS)
         {
@@ -244,7 +246,7 @@ impl PPM {
                         scene,
                         Ray::new(pos, rand_semisphere(&normal, rng)),
                         n_stack.clone(),
-                        flux * object.color_at(pos),
+                        flux * object.color_at(pos, uv),
                         depth + 1,
                         photons,
                         rng,
@@ -258,14 +260,14 @@ impl PPM {
                             ray.direction - normal * 2.0 * Vector3f::dot(&normal, &ray.direction),
                         ),
                         n_stack.clone(),
-                        flux * object.color_at(pos),
+                        flux * object.color_at(pos, uv),
                         depth + 1,
                         photons,
                         rng,
                     );
                 }
                 Surface::Refractive(nt) => {
-                    flux *= object.color_at(pos);
+                    flux *= object.color_at(pos, uv);
                     let inside = if Vector3f::dot(&normal, &ray.direction) > 0.0 {
                         // (-normal, true)
                         normal = -normal;
@@ -342,27 +344,24 @@ impl Render for PPM {
         pixels.into_par_iter().for_each(|(i, j)| {
             let mut cur = Vec::new();
             let mut rng = thread_rng();
-            direct.lock().unwrap().set(
-                i,
-                j,
-                camera
-                    .gen(i, j, &mut rng)
-                    .iter()
-                    .map(|ray| {
-                        self.ray_tracing(
-                            scene,
-                            *ray,
-                            vec![scene.n],
-                            (i, j),
-                            0,
-                            Color::new([1.0, 1.0, 1.0]),
-                            &mut cur,
-                            &mut rng,
-                        )
-                    })
-                    .sum::<Color>()
-                    / camera.anti_alias as FloatT,
-            );
+            let color = camera
+                .gen(i, j, &mut rng)
+                .iter()
+                .map(|ray| {
+                    self.ray_tracing(
+                        scene,
+                        *ray,
+                        vec![scene.n],
+                        (i, j),
+                        0,
+                        Color::new([1.0, 1.0, 1.0]),
+                        &mut cur,
+                        &mut rng,
+                    )
+                })
+                .sum::<Color>()
+                / camera.anti_alias as FloatT;
+            direct.lock().unwrap().set(i, j, color);
             view_points.lock().unwrap().extend(cur);
         });
         println!("view points num: {}", view_points.lock().unwrap().len());

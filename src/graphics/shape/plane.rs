@@ -1,7 +1,7 @@
 use serde::{Deserialize, Deserializer};
 
 use crate::graphics::shape::{rand_sphere, RandOut};
-use crate::graphics::HitTemp;
+use crate::graphics::{HitTemp, Hittable};
 use crate::math::vector::{Vector2f, Vector3f};
 use crate::math::{FloatT, Ray};
 use rand::prelude::ThreadRng;
@@ -52,17 +52,30 @@ impl<'de> Deserialize<'de> for Plane {
     }
 }
 
-impl Plane {
-    pub fn hit(&self, ray: &Ray, t_min: f64) -> Option<HitTemp> {
+impl Hittable for Plane {
+    fn hit(&self, ray: &Ray, t_min: FloatT) -> Option<HitTemp> {
         let t = -(-self.d + Vector3f::dot(&self.normal, &ray.origin))
             / Vector3f::dot(&self.normal, &ray.direction);
         if t > t_min {
-            Some((t, self.normal))
+            Some(HitTemp {
+                t,
+                normal: self.normal,
+                uv: None,
+            })
         } else {
             None
         }
     }
-    pub fn texture_map(&self, pos: Vector3f, w: usize, h: usize) -> (usize, usize) {
+}
+
+impl Plane {
+    pub fn texture_map(
+        &self,
+        pos: Vector3f,
+        uv: Option<(FloatT, FloatT)>,
+        w: usize,
+        h: usize,
+    ) -> (usize, usize) {
         let w = w as isize;
         let h = h as isize;
         let pos = pos - self.origin;

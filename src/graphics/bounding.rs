@@ -1,5 +1,5 @@
 use crate::math::vector::Vector3f;
-use crate::math::{Ray, FloatT};
+use crate::math::{FloatT, Ray};
 use std::cmp::min;
 use std::mem::swap;
 
