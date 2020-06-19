@@ -5,7 +5,7 @@
                 "shape": {
                     "Plane": {
                         "normal": [1, 0, 0],
-                        "d": -10
+                        "d": -800
                     }
                 },
                 "flux": [0, 0, 0],
@@ -20,7 +20,7 @@
                 "shape": {
                     "Plane": {
                         "normal": [-1, 0, 0],
-                        "d": -10
+                        "d": -800
                     }
                 },
                 "flux": [0, 0, 0],
@@ -35,7 +35,7 @@
                 "shape": {
                     "Plane": {
                         "normal": [0, 1, 0],
-                        "d": -10
+                        "d": -500
                     }
                 },
                 "flux": [0, 0, 0],
@@ -50,7 +50,7 @@
                 "shape": {
                     "Plane": {
                         "normal": [0, -1, 0],
-                        "d": -10
+                        "d": -500
                     }
                 },
                 "flux": [0, 0, 0],
@@ -65,13 +65,17 @@
                 "shape": {
                     "Plane": {
                         "normal": [0, 0, -1],
-                        "d": -10
+                        "d": -500
                     }
                 },
                 "flux": [0, 0, 0],
                 "material": {
                     "texture": {
-                        "Pure": [0.25, 0.75, 0.25]
+                        "Image": {
+                            "path": "asset/littile-pig-head.jpg",
+                            "lr": false,
+                            "ud": false
+                        }
                     },
                     "surface": "Diffuse"
                 }
@@ -94,11 +98,11 @@
             {
                 "shape": {
                     "Sphere": {
-                        "center": [0, 0, 0],
-                        "radius": 2
+                        "center": [0, 480, 0],
+                        "radius": 1
                     }
                 },
-                "flux": [100, 100, 100],
+                "flux": [200000, 200000, 200000],
                 "material": {
                     "texture": {
                         "Pure": [0, 0, 0]
@@ -110,41 +114,47 @@
             },
             {
                 "shape": {
-                    "Sphere": {
-                        "center": [3, 3, 3],
-                        "radius": 1.5
+                    "Bezier": {
+                        "points": [
+                            [0.0, 0.0],
+                            [280, 0],
+                            [120, 320],
+                            [40, 200],
+                            [80, 420]
+                        ],
+                        "shift": [-200, -500, 100]
                     }
                 },
-                "flux": [0, 0, 0],
                 "material": {
                     "texture": {
-                        "Pure": [0.5, 0.5, 0.5]
+                        "Pure": [0.5, 0.6, 0.7]
                     },
                     "surface": {
                         "Diffuse": null
                     }
-                }
+                },
+                "flux": [0, 0, 0]
             }
         ],
         "env": [0, 0, 0],
         "n": 1
     },
     "camera": {
-        "center": [0, 0, -20],
+        "center": [0, 0, -1000],
         "direction": [0, 0, 1],
         "up": [0, 1, 0],
         "dis": 373,
-        "w": 400,
-        "h": 400,
-        "anti_alias": 4
+        "w": 640,
+        "h": 480,
+        "anti_alias": 5
     },
     "renderer": {
         "PPM": {
-            "pa": 0.1,
-            "photon_num": 1000000,
-            "init_radius": 1,
-            "alpha": 0.2
+            "pa": 0.5,
+            "photon_num": 5000000,
+            "init_radius": 10,
+            "alpha": 0.3
         }
     },
-    "num_threads": 20
+    "num_threads": 10
 }

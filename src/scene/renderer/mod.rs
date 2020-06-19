@@ -10,7 +10,6 @@ use crate::math::vector::Vector3f;
 use crate::math::{sqr, FloatT, Ray, EPS};
 pub use ppm::*;
 pub use pt::*;
-use rand::prelude::*;
 
 pub trait Render {
     fn render(&self, scene: &Scene, camera: &Camera, name: &str);

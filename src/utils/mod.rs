@@ -1,10 +1,8 @@
 use crate::math::vector::Vector3f;
 use crate::math::{clamp, FloatT};
 use crate::scene::{Camera, Render, Renderer, Scene};
-use serde::export::Formatter;
 use serde::{Deserialize, Deserializer};
 use std::fs;
-use std::fs::File;
 use std::io::Write;
 
 pub fn trans(x: FloatT) -> u8 {
@@ -26,8 +24,9 @@ pub struct Task {
 }
 
 impl<'de> Deserialize<'de> for Task {
-    fn deserialize<D>(deserializer: D) -> Result<Self, <D as Deserializer<'de>>::Error> where
-        D: Deserializer<'de>
+    fn deserialize<D>(deserializer: D) -> Result<Self, <D as Deserializer<'de>>::Error>
+    where
+        D: Deserializer<'de>,
     {
         #[derive(Deserialize)]
         struct TaskInfo {
@@ -63,8 +62,7 @@ impl Task {
             .build()
             .unwrap()
             .install(|| {
-                self.renderer
-                    .render(&self.scene, &self.camera, &self.name);
+                self.renderer.render(&self.scene, &self.camera, &self.name);
             });
     }
 }

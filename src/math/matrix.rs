@@ -3,11 +3,27 @@ use std::ops;
 use crate::math::vector::Vector3f;
 use crate::math::FloatT;
 use serde::Deserialize;
+use std::ops::Mul;
 
 // Matrix with order 3
 #[repr(C)]
 #[derive(Copy, Clone, Deserialize)]
 pub struct Matrix3([[FloatT; 3]; 3]);
+
+impl Mul for Matrix3 {
+    type Output = Self;
+
+    fn mul(self, rhs: Self) -> Self::Output {
+        Self::from_vectors(
+            [
+                self * rhs.column(0),
+                self * rhs.column(1),
+                self * rhs.column(2),
+            ],
+            true,
+        )
+    }
+}
 
 impl std::ops::Deref for Matrix3 {
     type Target = [[FloatT; 3]; 3];
@@ -57,6 +73,36 @@ impl Matrix3 {
             [self[0][0], self[1][0], self[2][0]],
             [self[0][1], self[1][1], self[2][1]],
             [self[0][2], self[1][2], self[2][2]],
+        ])
+    }
+
+    pub fn determinant(&self) -> FloatT {
+        self[0][0] * self[1][1] * self[2][2]
+            + self[0][1] * self[1][2] * self[2][0]
+            + self[0][2] * self[1][0] * self[2][1]
+            - self[0][0] * self[1][2] * self[2][1]
+            - self[0][1] * self[1][0] * self[2][2]
+            - self[0][2] * self[1][1] * self[2][0]
+    }
+
+    pub fn inv(&self) -> Self {
+        let d = self.determinant();
+        Self([
+            [
+                (self[1][1] * self[2][2] - self[1][2] * self[2][1]) / d,
+                (self[2][1] * self[0][2] - self[2][2] * self[0][1]) / d,
+                (self[0][1] * self[1][2] - self[0][2] * self[1][1]) / d,
+            ],
+            [
+                (self[1][2] * self[2][0] - self[1][0] * self[2][2]) / d,
+                (self[2][2] * self[0][0] - self[2][0] * self[0][2]) / d,
+                (self[0][2] * self[1][0] - self[0][0] * self[1][2]) / d,
+            ],
+            [
+                (self[1][0] * self[2][1] - self[1][1] * self[2][0]) / d,
+                (self[2][0] * self[0][1] - self[2][1] * self[0][0]) / d,
+                (self[0][0] * self[1][1] - self[0][1] * self[1][0]) / d,
+            ],
         ])
     }
 }

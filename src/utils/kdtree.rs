@@ -49,7 +49,7 @@ impl<Item: Positionable + Clone> Positionable for Node<Item> {
     }
 }
 
-pub fn new<Item: Positionable + Clone>(mut items: Vec<Item>) -> Box<Node<Item>> {
+pub fn new<Item: Positionable + Clone>(items: Vec<Item>) -> Box<Node<Item>> {
     Node::<Item>::new(items)
 }
 
@@ -134,14 +134,14 @@ impl<'a, Item: Positionable + Clone> Node<Item> {
         ret
     }
 
-    fn contains(&self, pos: &Vector3f) -> bool {
-        for i in 0..3 {
-            if self.min[i] > pos[i] || pos[i] > self.max[i] {
-                return false;
-            }
-        }
-        true
-    }
+    // fn contains(&self, pos: &Vector3f) -> bool {
+    //     for i in 0..3 {
+    //         if self.min[i] > pos[i] || pos[i] > self.max[i] {
+    //             return false;
+    //         }
+    //     }
+    //     true
+    // }
 
     // 返回所有 |x - pos| <= r 的点
     pub fn within(&self, pos: &Vector3f, r: FloatT) -> Vec<Item> {

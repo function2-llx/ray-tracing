@@ -3,7 +3,9 @@ use std::fmt::{Display, Formatter};
 use crate::math::FloatT;
 use serde::Deserialize;
 use std::iter::Sum;
-use std::ops::{Add, AddAssign, Deref, DerefMut, Div, DivAssign, Mul, MulAssign, Neg, Sub};
+use std::ops::{
+    Add, AddAssign, Deref, DerefMut, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign,
+};
 
 #[derive(Copy, Clone, Deserialize)]
 #[repr(C)]
@@ -19,7 +21,7 @@ impl Deref for Vector2f {
 
 #[derive(Copy, Clone, Deserialize, Debug)]
 #[repr(C)]
-pub struct Vector3f([FloatT; 3]);
+pub struct Vector3f(pub [FloatT; 3]);
 
 impl Sum for Vector3f {
     fn sum<I: Iterator<Item = Vector3f>>(iter: I) -> Self {
@@ -75,6 +77,16 @@ impl Vector3f {
         self[0].abs() + self[1].abs() + self[2].abs()
     }
 
+    pub fn x(&self) -> FloatT {
+        self[0]
+    }
+    pub fn y(&self) -> FloatT {
+        self[1]
+    }
+    pub fn z(&self) -> FloatT {
+        self[2]
+    }
+
     // pub fn standardized(&self) -> Self {
     //     let p = self[0].max(self[1]).max(self[2]);
     //     self / p
@@ -127,6 +139,14 @@ impl Sub for Vector3f {
 
     fn sub(self, rhs: Self) -> Self::Output {
         Vector3f::new([self[0] - rhs[0], self[1] - rhs[1], self[2] - rhs[2]])
+    }
+}
+
+impl SubAssign for Vector3f {
+    fn sub_assign(&mut self, rhs: Self) {
+        self[0] -= rhs[0];
+        self[1] -= rhs[1];
+        self[2] -= rhs[2];
     }
 }
 

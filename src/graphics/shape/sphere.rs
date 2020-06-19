@@ -1,7 +1,7 @@
 use serde::Deserialize;
 
 use crate::graphics::material::{Material, Surface, Texture};
-use crate::graphics::shape::{rand_sphere, RandOut, rand_semisphere};
+use crate::graphics::shape::{rand_semisphere, rand_sphere, RandOut};
 use crate::graphics::{Hit, HitTemp, Hittable, Shape, TextureMap};
 use crate::math::vector::{Vector2f, Vector3f};
 use crate::math::{FloatT, Ray};

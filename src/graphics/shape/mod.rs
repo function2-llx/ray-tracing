@@ -4,11 +4,13 @@ use crate::graphics::{Hit, HitTemp, Hittable, TextureMap};
 use crate::math::matrix::Matrix3;
 use crate::math::vector::Vector3f;
 use crate::math::{FloatT, Ray, PI, ZERO};
+pub use bezier::*;
 pub use plane::*;
 use rand::prelude::ThreadRng;
 use rand::Rng;
 pub use sphere::*;
 
+mod bezier;
 mod plane;
 mod sphere;
 
@@ -16,6 +18,7 @@ mod sphere;
 pub enum Shape {
     Sphere(Sphere),
     Plane(Plane),
+    Bezier(BezierRotate),
 }
 
 impl RandOut for Shape {
@@ -24,6 +27,7 @@ impl RandOut for Shape {
         match self {
             Sphere(sphere) => sphere.rand_out(rng),
             Plane(plane) => plane.rand_out(rng),
+            _ => unimplemented!(),
         }
     }
 }
@@ -59,6 +63,7 @@ impl Hittable for Shape {
         match self {
             Sphere(sphere) => sphere.hit(r, t_min),
             Plane(plane) => plane.hit(r, t_min),
+            Bezier(bezier) => bezier.hit(r, t_min),
         }
     }
 }
@@ -69,6 +74,7 @@ impl TextureMap for Shape {
         match self {
             Sphere(sphere) => sphere.texture_map(pos, w, h),
             Plane(plane) => plane.texture_map(pos, w, h),
+            Bezier(bezier) => unimplemented!(),
         }
     }
 }

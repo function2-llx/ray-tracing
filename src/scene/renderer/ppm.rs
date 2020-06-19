@@ -6,7 +6,7 @@ use rayon::prelude::*;
 use serde::Deserialize;
 
 use crate::graphics::material::Surface;
-use crate::graphics::shape::{RandOut, rand_semisphere};
+use crate::graphics::shape::{rand_semisphere, RandOut};
 use crate::graphics::{Color, Hit};
 use crate::math::matrix::Matrix3;
 use crate::math::vector::Vector3f;
@@ -14,8 +14,8 @@ use crate::math::{sqr, FloatT, Ray, EPS, PI, ZERO};
 use crate::scene::{renderer::get_n, Camera, Render, Scene};
 use crate::utils::{kdtree, Image, Positionable};
 use std::cmp::min;
-use std::time::Instant;
 use std::ptr::drop_in_place;
+use std::time::Instant;
 
 #[derive(Deserialize)]
 pub struct PPM {
@@ -240,7 +240,15 @@ impl PPM {
                         flux,
                         dir: ray.direction,
                     });
-                    self.photon_tracing(scene, Ray::new(pos, rand_semisphere(&normal, rng)), n_stack.clone(), flux * object.color_at(pos), depth + 1, photons, rng);
+                    self.photon_tracing(
+                        scene,
+                        Ray::new(pos, rand_semisphere(&normal, rng)),
+                        n_stack.clone(),
+                        flux * object.color_at(pos),
+                        depth + 1,
+                        photons,
+                        rng,
+                    );
                 }
                 Surface::Specular => {
                     self.photon_tracing(
@@ -327,7 +335,7 @@ impl Render for PPM {
                 pixels.push((i, j));
             }
         }
-        let mut view_points = Mutex::new(Vec::<ViewPoint>::new());
+        let view_points = Mutex::new(Vec::<ViewPoint>::new());
         println!("eye pass");
         // 处理光源的颜色
         let direct = Mutex::new(Image::empty(camera.w, camera.h));
@@ -369,7 +377,7 @@ impl Render for PPM {
                 .collect::<Vec<_>>();
             let tot_energy = energy.iter().sum::<FloatT>();
             println!("energy: {:?}", energy);
-            let mut photons = Mutex::new(Vec::<Photon>::new());
+            let photons = Mutex::new(Vec::<Photon>::new());
             println!("building photon map...");
             for (object, energy) in scene.objects.iter().zip(energy) {
                 let photon_num = (self.photon_num as FloatT * energy / tot_energy + 0.5) as usize;
@@ -406,7 +414,7 @@ impl Render for PPM {
             };
 
             println!("updating...");
-            let mut image = Mutex::new(direct.clone());
+            let image = Mutex::new(direct.clone());
             view_points
                 .lock()
                 .unwrap()
@@ -421,7 +429,9 @@ impl Render for PPM {
                     image.lock().unwrap().add(
                         view_point.pixel.0,
                         view_point.pixel.1,
-                        view_point.flux / ((iter * camera.anti_alias) as FloatT * sqr(view_point.radius)) as FloatT,
+                        view_point.flux
+                            / ((iter * camera.anti_alias) as FloatT * sqr(view_point.radius))
+                                as FloatT,
                     );
                 });
 

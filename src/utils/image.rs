@@ -10,8 +10,8 @@ use crate::math::FloatT;
 use crate::utils::trans;
 use image::{open, GenericImageView};
 use std::mem::{swap, MaybeUninit};
-use std::sync::Mutex;
 use std::path::Path;
+use std::sync::Mutex;
 
 #[derive(Clone)]
 pub struct Image {
@@ -95,7 +95,7 @@ impl Image {
         let path = format!("output/{}.png", name);
         let back_up = format!("output/{}-bk.png", name);
         if Path::new(&path).exists() {
-            std::fs::copy(&path, back_up);
+            std::fs::copy(&path, back_up).unwrap();
         }
         println!("Writing to {}", &path);
         let mut buf = image::ImageBuffer::new(self.w as u32, self.h as u32);
@@ -113,8 +113,7 @@ impl Image {
                 )
             }
         }
-        buf.save(&path)
-            .expect(&format!("cannot save to {}", path));
+        buf.save(&path).expect(&format!("cannot save to {}", path));
         println!("...done");
     }
 

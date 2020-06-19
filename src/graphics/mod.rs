@@ -6,8 +6,11 @@ use crate::math::vector::{Vector2f, Vector3f};
 use crate::math::{FloatT, Ray};
 use rand::prelude::ThreadRng;
 
+mod bounding;
 pub mod material;
 pub mod shape;
+
+pub use bounding::*;
 
 pub type Color = Vector3f;
 
@@ -22,7 +25,7 @@ pub struct Hit<'a> {
 
 // 统一接口
 pub trait Hittable {
-    fn hit(&self, r: &Ray, t_min: FloatT) -> Option<HitTemp>;
+    fn hit(&self, ray: &Ray, t_min: FloatT) -> Option<HitTemp>;
 }
 
 trait TextureMap {
