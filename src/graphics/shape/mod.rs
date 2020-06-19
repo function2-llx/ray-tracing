@@ -13,6 +13,7 @@ pub use sphere::*;
 mod bezier;
 mod plane;
 mod sphere;
+mod rectangle;
 
 #[derive(Deserialize, Debug)]
 pub enum Shape {
