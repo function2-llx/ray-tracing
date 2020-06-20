@@ -2,13 +2,13 @@ use std::io::{BufRead, Read};
 
 use crate::graphics::shape::Triangle;
 use crate::graphics::{Bounding, HitTemp, Hittable};
+use crate::math::matrix::Matrix3;
 use crate::math::vector::Vector3f;
 use crate::math::{FloatT, Ray, INF};
 use crate::utils::kdtree::triangle::Node;
 use serde::export::Formatter;
 use serde::{Deserialize, Deserializer};
 use std::fmt::Debug;
-use crate::math::matrix::Matrix3;
 
 pub struct Mesh {
     points: Vec<Vector3f>,
@@ -44,18 +44,22 @@ impl<'de> Deserialize<'de> for Mesh {
         }
 
         let info = MeshInfo::deserialize(deserializer)?;
-        let rotates = info.rotates.iter().map(|r| {
-            let t = r.degree.to_radians();
-            let cos = t.cos();
-            let sin = t.sin();
+        let rotates = info
+            .rotates
+            .iter()
+            .map(|r| {
+                let t = r.degree.to_radians();
+                let cos = t.cos();
+                let sin = t.sin();
 
-            match r.dim {
-                0 => Matrix3([[1.0, 0.0, 0.0], [0.0, cos, -sin], [0.0, sin, cos]]),
-                1 => Matrix3([[cos, 0.0, sin], [0.0, 1.0, 0.0], [-sin, 0.0, cos]]),
-                2 => Matrix3([[cos, -sin, 0.0], [sin, cos, 0.0], [0.0, 0.0, 1.0]]),
-                _ => panic!("bad dim"),
-            }
-        }).collect::<Vec<_>>();
+                match r.dim {
+                    0 => Matrix3([[1.0, 0.0, 0.0], [0.0, cos, -sin], [0.0, sin, cos]]),
+                    1 => Matrix3([[cos, 0.0, sin], [0.0, 1.0, 0.0], [-sin, 0.0, cos]]),
+                    2 => Matrix3([[cos, -sin, 0.0], [sin, cos, 0.0], [0.0, 0.0, 1.0]]),
+                    _ => panic!("bad dim"),
+                }
+            })
+            .collect::<Vec<_>>();
         Ok(Mesh::from_obj(&info.path, info.shift, info.scale, rotates))
     }
 }
@@ -77,12 +81,10 @@ impl Mesh {
             let bounding = Bounding::build(&points);
             (bounding.min + bounding.max) / 2.0
         };
-        points
-            .iter_mut()
-            .for_each(|p| {
-                rotates.iter().for_each(|r| *p = *r * *p);
-                *p = mid + scale * (*p - mid) + shift;
-            });
+        points.iter_mut().for_each(|p| {
+            rotates.iter().for_each(|r| *p = *r * *p);
+            *p = mid + scale * (*p - mid) + shift;
+        });
         let bounding = Bounding::build(&points);
         let normals = object
             .normals
@@ -132,6 +134,10 @@ impl Hittable for Mesh {
             } else {
                 None
             }
+        // self.triangles
+        //     .iter()
+        //     .filter_map(|t| t.hit(ray, t_min))
+        //     .min_by(|a, b| a.t.partial_cmp(&b.t).unwrap())
         } else {
             None
         }

@@ -68,7 +68,7 @@ fn get_n(inside: bool, n_stack: &Vec<FloatT>, nt: &FloatT) -> (FloatT, FloatT) {
     if inside {
         let len = n_stack.len();
         if len < 2 {
-            println!("yabaidesune!");
+            // println!("yabaidesune!");
             (1.0, 1.0)
         } else {
             (n_stack[len - 1], n_stack[len - 2])

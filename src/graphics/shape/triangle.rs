@@ -31,7 +31,7 @@ impl Triangle {
 impl Hittable for Triangle {
     fn hit(&self, ray: &Ray, t_min: f64) -> Option<HitTemp> {
         if self.bounding.intersect(ray).is_none() {
-            return None
+            return None;
         }
         let s = self.vertices[0] - ray.origin;
         let d = Matrix3::from_vectors([ray.direction, self.e1, self.e2], true).determinant();
@@ -40,7 +40,9 @@ impl Hittable for Triangle {
         let gamma = Matrix3::from_vectors([ray.direction, self.e1, s], true).determinant() / d;
         let alpha = 1.0 - beta - gamma;
         if t > t_min && alpha >= 0.0 && beta >= 0.0 && gamma >= 0.0 {
-            let normal = (alpha * self.normals[0] + beta * self.normals[1] + gamma * self.normals[2]).normalized();
+            let normal =
+                (alpha * self.normals[0] + beta * self.normals[1] + gamma * self.normals[2])
+                    .normalized();
             Some(HitTemp {
                 t,
                 normal,

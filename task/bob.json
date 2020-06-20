@@ -1,0 +1,173 @@
+{
+    "scene": {
+        "objects": [
+            {
+                "shape": {
+                    "Plane": {
+                        "normal": [1, 0, 0],
+                        "d": -800
+                    }
+                },
+                "flux": [0, 0, 0],
+                "material": {
+                    "texture": {
+                        "Pure": [0.5, 0.5, 0.5]
+                    },
+                    "surface": "Diffuse"
+                }
+            },
+            {
+                "shape": {
+                    "Plane": {
+                        "normal": [-1, 0, 0],
+                        "d": -800
+                    }
+                },
+                "flux": [0, 0, 0],
+                "material": {
+                    "texture": {
+                        "Pure": [0.75, 0.25, 0.25]
+                    },
+                    "surface": "Diffuse"
+                }
+            },
+            {
+                "shape": {
+                    "Plane": {
+                        "normal": [0, 1, 0],
+                        "d": -500
+                    }
+                },
+                "flux": [0, 0, 0],
+                "material": {
+                    "texture": {
+                        "Pure": [0.25, 0.25, 0.75]
+                    },
+                    "surface": "Diffuse"
+                }
+            },
+            {
+                "shape": {
+                    "Plane": {
+                        "normal": [0, -1, 0],
+                        "d": -500
+                    }
+                },
+                "flux": [0, 0, 0],
+                "material": {
+                    "texture": {
+                        "Pure": [0.25, 0.75, 0.25]
+                    },
+                    "surface": "Diffuse"
+                }
+            },
+            {
+                "shape": {
+                    "Plane": {
+                        "normal": [0, 0, -1],
+                        "d": -500
+                    }
+                },
+                "flux": [0, 0, 0],
+                "material": {
+                    "texture": {
+                        "Image": {
+                            "path": "asset/littile-pig-head.jpg",
+                            "lr": false,
+                            "ud": false
+                        }
+                    },
+                    "surface": "Diffuse"
+                }
+            },
+            {
+                "shape": {
+                    "Plane": {
+                        "normal": [0, 0, 1],
+                        "d": -2000
+                    }
+                },
+                "flux": [0, 0, 0],
+                "material": {
+                    "texture": {
+                        "Pure": [0.7, 0.3, 0.6]
+                    },
+                    "surface": "Diffuse"
+                }
+            },
+            {
+                "shape": {
+                    "Sphere": {
+                        "center": [-270, -270, 200],
+                        "radius": 150
+                    }
+                },
+                "flux": [0.0, 0.0, 0.0],
+                "material": {
+                    "texture": {
+                        "Pure": [0.2, 0.4, 0.7]
+                    },
+                    "surface": {
+                        "Diffuse": null
+                    }
+                }
+            },
+            {
+                "shape": {
+                    "Sphere": {
+                        "center": [0, 480, 0],
+                        "radius": 1
+                    }
+                },
+                "flux": [200000, 200000, 200000],
+                "material": {
+                    "texture": {
+                        "Pure": [0, 0, 0]
+                    },
+                    "surface": {
+                        "Diffuse": null
+                    }
+                }
+            },
+            {
+                "shape": {
+                    "Mesh": {
+                        "path": "asset/bob/tri.obj",
+                        "shift": [100, 0, -300],
+                        "scale": [150, 150, 150],
+                        "rotates": []
+                    }
+                },
+                "flux": [0, 0, 0],
+                "material": {
+                    "texture": {
+                        "Pure": [1, 1, 1]
+                    },
+                    "surface": {
+                        "Diffuse": null
+                    }
+                }
+            }
+        ],
+        "env": [0, 0, 0],
+        "n": 1
+    },
+    "camera": {
+        "center": [0, 0, -800],
+        "direction": [0, 0, 1],
+        "up": [0, 1, 0],
+        "dis": 373,
+        "w": 1024,
+        "h": 768,
+        "anti_alias": 5
+    },
+    "renderer": {
+        "PPM": {
+            "pa": 0.5,
+            "photon_num": 500000,
+            "init_radius": 10,
+            "alpha": 0.1
+        }
+    },
+    "num_threads": 20
+}

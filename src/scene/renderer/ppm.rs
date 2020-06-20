@@ -155,13 +155,12 @@ impl PPM {
                             let (re, tr) = self.refractive(&ray.direction, &normal, n, nt);
                             if let Some((tr, t)) = tr {
                                 assert!(Vector3f::dot(&t, &normal) <= 0.0);
+                                let re_t = ray.direction
+                                    - normal * 2.0 * Vector3f::dot(&normal, &ray.direction);
+                                assert!(Vector3f::dot(&normal, &re_t) >= 0.0);
                                 re * self.ray_tracing(
                                     scene,
-                                    Ray::new(
-                                        pos,
-                                        ray.direction
-                                            - normal * 2.0 * Vector3f::dot(&normal, &ray.direction),
-                                    ),
+                                    Ray::new(pos, re_t),
                                     n_stack.clone(),
                                     pixel,
                                     depth + 1,

@@ -174,7 +174,7 @@
     "renderer": {
         "PPM": {
             "pa": 0.5,
-            "photon_num": 50000000,
+            "photon_num": 10000000,
             "init_radius": 3,
             "alpha": 0.2
         }

@@ -96,15 +96,9 @@ impl Node {
             .triangles
             .iter()
             .filter_map(|t| {
-                if let Some(hit) = t.hit(ray, t_min) {
-                    if hit.t < t_max {
-                        Some(hit)
-                    } else {
-                        None
-                    }
-                } else {
-                    None
-                }
+                t.hit(ray, t_min)
+                    .map(|hit| if hit.t < t_max { Some(hit) } else { None })
+                    .unwrap_or(None)
             })
             .min_by(|a, b| a.t.partial_cmp(&b.t).unwrap());
 
@@ -123,19 +117,20 @@ impl Node {
             .map(|x| x.bounding.intersect(ray))
             .unwrap_or(None);
         let sub = match (l, r) {
-            // 由于区域不相交，因此这两个区间也一定不相交
             (Some(l), Some(r)) => {
-                if l.1 < r.0 {
-                    let l = self.l.as_ref().unwrap().hit(ray, t_min, t_max);
-                    if l.is_some() {
-                        l
+                // 由于区域不相交，因此这两个区间也一定不相交
+                // assert!(l.1 <= r.0 || r.1 <= l.0);
+                if l.1 <= r.0 {
+                    let hit = self.l.as_ref().unwrap().hit(ray, t_min, t_max);
+                    if hit.is_some() {
+                        hit
                     } else {
                         self.r.as_ref().unwrap().hit(ray, t_min, t_max)
                     }
                 } else {
-                    let r = self.r.as_ref().unwrap().hit(ray, t_min, t_max);
-                    if r.is_some() {
-                        r
+                    let hit = self.r.as_ref().unwrap().hit(ray, t_min, t_max);
+                    if hit.is_some() {
+                        hit
                     } else {
                         self.l.as_ref().unwrap().hit(ray, t_min, t_max)
                     }
