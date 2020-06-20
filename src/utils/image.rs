@@ -166,7 +166,7 @@ impl<'de> Deserialize<'de> for Image {
             image.lr();
         }
         if info.ud {
-            image.lr();
+            image.ud();
         }
         Ok(image)
     }

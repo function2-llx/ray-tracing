@@ -188,8 +188,8 @@
                     "Rectangle": {
                         "w": 447,
                         "h": 476,
-                        "origin": [799, 0, 0],
-                        "normal": [-1, 0, 0],
+                        "origin": [-799, 0, 0],
+                        "normal": [1, 0, 0],
                         "x": [0, 0, -1]
                     }
                 },
@@ -197,8 +197,8 @@
                     "texture": {
                         "Image": {
                             "path": "asset/girl.jpeg",
-                            "lr": false,
-                            "ud": false
+                            "lr": true,
+                            "ud": true
                         }
                     },
                     "surface": {
