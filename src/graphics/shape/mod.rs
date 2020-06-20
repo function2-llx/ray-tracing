@@ -16,8 +16,12 @@ mod plane;
 mod sphere;
 mod rectangle;
 mod circle;
+mod mesh;
+mod triangle;
 
+pub use triangle::*;
 pub use circle::*;
+pub use mesh::*;
 
 #[derive(Deserialize, Debug)]
 pub enum Shape {
@@ -26,6 +30,7 @@ pub enum Shape {
     Bezier(BezierRotate),
     Rectangle(Rectangle),
     Circle(Circle),
+    Mesh(Mesh),
 }
 
 impl RandOut for Shape {
@@ -36,6 +41,7 @@ impl RandOut for Shape {
             Plane(plane) => plane.rand_out(rng),
             Rectangle(rec) => rec.rand_out(rng),
             Circle(circle) => circle.rand_out(rng),
+            Mesh(_) => unimplemented!(),
             Bezier(_) => unimplemented!(),
         }
     }
@@ -75,6 +81,7 @@ impl Hittable for Shape {
             Bezier(bezier) => bezier.hit(r, t_min),
             Rectangle(rec) => rec.hit(r, t_min),
             Circle(circle) => circle.hit(r, t_min),
+            Mesh(mesh) => mesh.hit(r, t_min),
         }
     }
 }
@@ -93,7 +100,8 @@ impl TextureMap for Shape {
             Plane(plane) => plane.texture_map(pos, uv, w, h),
             Bezier(bezier) => bezier.texture_map(pos, uv, w, h),
             Rectangle(rec) => rec.texture_map(pos, uv, w, h),
-            Circle(circle) => unimplemented!(),
+            Circle(_circle) => unimplemented!(),
+            Mesh(_) => unimplemented!()
         }
     }
 }

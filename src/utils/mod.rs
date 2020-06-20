@@ -1,12 +1,13 @@
 use crate::math::vector::Vector3f;
-use crate::math::{clamp, FloatT};
+use crate::math::FloatT;
 use crate::scene::{Camera, Render, Renderer, Scene};
 use serde::{Deserialize, Deserializer};
 use std::fs;
 use std::io::Write;
 
+// 伽马修正
 pub fn trans(x: FloatT) -> u8 {
-    (clamp(x).powf(1.0 / 2.2) * 255.0 + 0.5) as u8
+    (::image::math::utils::clamp(x, 0.0, 1.0).powf(1.0 / 2.2) * 255.0 + 0.5) as u8
 }
 
 mod image;
@@ -23,11 +24,10 @@ pub struct Task {
     pub name: String,
 }
 
-impl<'de> Deserialize<'de> for Task {
-    fn deserialize<D>(deserializer: D) -> Result<Self, <D as Deserializer<'de>>::Error>
-    where
-        D: Deserializer<'de>,
-    {
+impl Task {
+    pub fn from_json(name: &str) -> Self {
+        let path = format!("task/{}.json", name);
+        let data = fs::read_to_string(&path).expect(&format!("Unable to read {}", &path));
         #[derive(Deserialize)]
         struct TaskInfo {
             pub scene: Scene,
@@ -35,25 +35,14 @@ impl<'de> Deserialize<'de> for Task {
             pub renderer: Renderer,
             pub num_threads: usize,
         }
-
-        let info = TaskInfo::deserialize(deserializer).unwrap();
-        Ok(Task {
+        let mut info = serde_json::from_str::<TaskInfo>(&data).expect("Cannot convert to json");
+        Task {
             scene: info.scene,
             camera: info.camera,
             renderer: info.renderer,
             num_threads: info.num_threads,
-            name: "".to_string(),
-        })
-    }
-}
-
-impl Task {
-    pub fn from_json(name: &str) -> Self {
-        let path = format!("task/{}.json", name);
-        let data = fs::read_to_string(&path).expect(&format!("Unable to read {}", &path));
-        let mut ret = serde_json::from_str::<Task>(&data).expect("Cannot convert to json");
-        ret.name = name.to_string();
-        ret
+            name: name.to_string()
+        }
     }
 
     pub fn run(&self) {

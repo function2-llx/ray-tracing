@@ -33,13 +33,3 @@ impl Ray {
         self.origin + t * self.direction
     }
 }
-
-pub fn clamp(x: FloatT) -> FloatT {
-    if x < 0.0 {
-        0.0
-    } else if x > 1.0 {
-        1.0
-    } else {
-        x
-    }
-}

@@ -144,7 +144,7 @@ impl Hittable for BezierRotate {
     // 1. 注意到两侧 y 值与 theta 无关，可建立 t, k 的关系；
     // 2. 对于 x, z 可平方相加消去 theta，然后代入上面的关系变为关于 t 一元的非线性方程。
     fn hit(&self, ray: &Ray, k_min: FloatT) -> Option<HitTemp> {
-        if !self.bounding.intersect(ray) {
+        if self.bounding.intersect(ray).is_none() {
             return None;
         }
         let Ray {

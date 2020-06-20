@@ -11,8 +11,23 @@ pub struct Bounding {
 }
 
 impl Bounding {
-    // 实现思路：维护射线的各维坐标出现在 [min, max] 之间的时间，看是否相交
-    pub fn intersect(&self, ray: &Ray) -> bool {
+    // 返回包围盒
+    pub fn build(points: &Vec<Vector3f>) -> Self {
+        assert!(!points.is_empty());
+        let mut min = Vector3f::empty();
+        let mut max = Vector3f::empty();
+        for i in 0..3 {
+            min[i] = points.iter().map(|x| x[i]).min_by(|a, b| a.partial_cmp(b).unwrap()).unwrap();
+            max[i] = points.iter().map(|x| x[i]).max_by(|a, b| a.partial_cmp(b).unwrap()).unwrap();
+        }
+        Bounding {
+            min,
+            max
+        }
+    }
+
+    // 求直线与包围盒的相交区间
+    pub fn intersect(&self, ray: &Ray) -> Option<(FloatT, FloatT)> {
         let mut l = (self.min - ray.origin) / ray.direction;
         let mut r = (self.max - ray.origin) / ray.direction;
         for i in 0..3 {
@@ -23,6 +38,12 @@ impl Bounding {
                 l[i] = 0.0;
             }
         }
-        l[0].max(l[1]).max(l[2]) <= r[0].min(r[1]).min(r[2])
+        let l = l[0].max(l[1]).max(l[2]);
+        let r = r[0].min(r[1]).min(r[2]);
+        if l <= r {
+            Some((l, r))
+        } else {
+            None
+        }
     }
 }

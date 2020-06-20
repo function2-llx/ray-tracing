@@ -9,11 +9,12 @@ use crate::graphics::shape::rand_semisphere;
 use crate::graphics::{Color, Hit};
 use crate::math::matrix::Matrix3;
 use crate::math::vector::Vector3f;
-use crate::math::{clamp, sqr, FloatT, Ray, EPS, PI, ZERO};
+use crate::math::{sqr, FloatT, Ray, EPS, PI, ZERO};
 use crate::scene::{renderer::get_n, Camera, Render, Scene};
 use crate::utils::Image;
 use pbr::ProgressBar;
 use rand::prelude::ThreadRng;
+use image::math::utils::clamp;
 
 #[derive(Deserialize)]
 pub struct PT {
@@ -153,7 +154,7 @@ impl Render for PT {
                         color += self.path_tracing(scene, ray.clone(), vec![scene.n], 0, &mut rng);
                     }
                     color /= self.samples as FloatT;
-                    Vector3f::new([clamp(color[0]), clamp(color[1]), clamp(color[2])])
+                    Vector3f::new([clamp(color[0], 0.0, 1.0), clamp(color[1], 0.0, 1.0), clamp(color[2], 0.0, 1.0)])
                 })
                 .sum::<Color>()
                 / rays.len() as FloatT;
