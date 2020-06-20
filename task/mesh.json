@@ -71,7 +71,11 @@
                 "flux": [0, 0, 0],
                 "material": {
                     "texture": {
-                        "Pure": [1, 1, 1]
+                        "Image": {
+                            "path": "asset/littile-pig-head.jpg",
+                            "lr": false,
+                            "ud": false
+                        }
                     },
                     "surface": "Diffuse"
                 }
@@ -112,51 +116,15 @@
             {
                 "shape": {
                     "Mesh": {
-                        "path": "asset/heart.obj",
-                        "shift": [100, 0, 0],
-                        "scale": [1, 1, 1]
+                        "path": "asset/dragon.obj",
+                        "shift": [100, -400, -200],
+                        "scale": [300, 300, 300]
                     }
                 },
                 "flux": [0, 0, 0],
                 "material": {
                     "texture": {
-                        "Pure": [0.19215686, 0.11372549, 0.2627451 ]
-                    },
-                    "surface": {
-                        "Diffuse": null
-                    }
-                }
-            },
-            {
-                "shape": {
-                    "Mesh": {
-                        "path": "asset/heart.obj",
-                        "shift": [-100, 0, 0],
-                        "scale": [2, 2, 2]
-                    }
-                },
-                "flux": [0, 0, 0],
-                "material": {
-                    "texture": {
-                        "Pure": [0, 0.25098039, 0.32156863]
-                    },
-                    "surface": {
-                        "Diffuse": null
-                    }
-                }
-            },
-            {
-                "shape": {
-                    "Mesh": {
-                        "path": "asset/heart.obj",
-                        "shift": [-100, 0, 0],
-                        "scale": [1, 1, 1]
-                    }
-                },
-                "flux": [0, 0, 0],
-                "material": {
-                    "texture": {
-                        "Pure": [0, 0.25098039, 0.32156863]
+                        "Pure": [0.25, 0.25, 0.25]
                     },
                     "surface": {
                         "Diffuse": null
@@ -174,7 +142,7 @@
         "dis": 373,
         "w": 640,
         "h": 480,
-        "anti_alias": 30
+        "anti_alias": 20
     },
     "renderer": {
         "PPM": {

@@ -1,22 +1,33 @@
-use std::io::BufRead;
+use std::io::{BufRead, Read};
 
-use tobj;
-use crate::math::vector::Vector3f;
-use crate::math::{FloatT, Ray};
-use crate::graphics::{Bounding, Hittable, HitTemp};
 use crate::graphics::shape::Triangle;
+use crate::graphics::{Bounding, HitTemp, Hittable};
+use crate::math::vector::Vector3f;
+use crate::math::{FloatT, Ray, INF};
+use crate::utils::kdtree::triangle::Node;
+use serde::export::Formatter;
 use serde::{Deserialize, Deserializer};
+use std::fmt::Debug;
 
-#[derive(Debug)]
 pub struct Mesh {
     points: Vec<Vector3f>,
     triangles: Vec<Triangle>,
     bounding: Bounding,
+    kdtree: Box<Node>,
+}
+
+impl Debug for Mesh {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Mesh")
+            .field("points", &self.points)
+            .finish()
+    }
 }
 
 impl<'de> Deserialize<'de> for Mesh {
-    fn deserialize<D>(deserializer: D) -> Result<Self, <D as Deserializer<'de>>::Error> where
-        D: Deserializer<'de>
+    fn deserialize<D>(deserializer: D) -> Result<Self, <D as Deserializer<'de>>::Error>
+    where
+        D: Deserializer<'de>,
     {
         #[derive(Deserialize)]
         struct MeshInfo {
@@ -32,27 +43,61 @@ impl<'de> Deserialize<'de> for Mesh {
 
 impl Mesh {
     pub fn from_obj(path: &str, shift: Vector3f, scale: Vector3f) -> Self {
-        let (mut models, _) = tobj::load_obj(path, true).expect(&format!("load from {} failed", path));
-        let mesh = models.pop().expect("no model found").mesh;
-
-        let mut points = (0..mesh.positions.len()).step_by(3).map(|i| {
-            Vector3f::new([mesh.positions[i] as FloatT, mesh.positions[i + 1] as FloatT, mesh.positions[i + 2] as FloatT]) + shift
-        }).collect::<Vec<_>>();
+        let data = std::fs::read_to_string(path).expect(&format!("cannot read from {}", path));
+        let mut object = wavefront_obj::obj::parse(data)
+            .expect(&format!("load from {} failed", path))
+            .objects
+            .pop()
+            .expect("no object");
+        let mut points = object
+            .vertices
+            .iter()
+            .map(|v| Vector3f::new([v.x, v.y, v.z]))
+            .collect::<Vec<_>>();
+        let mid = {
+            let bounding = Bounding::build(&points);
+            (bounding.min + bounding.max) / 2.0
+        };
+        points
+            .iter_mut()
+            .for_each(|p| *p = mid + scale * (*p - mid));
         let bounding = Bounding::build(&points);
-        let mid = (bounding.min + bounding.max) / 2.0;
-        points.iter_mut().for_each(|p| *p = mid + scale * (*p - mid));
-
-        // 注意这里要重构包围盒
-        let bounding = Bounding::build(&points);
-
-        let triangles = (0..mesh.indices.len()).step_by(3).map(|i| {
-            Triangle::new([points[mesh.indices[i] as usize], points[mesh.indices[i + 1] as usize], points[mesh.indices[i + 2] as usize]])
-        }).collect::<Vec<_>>();
+        let normals = object
+            .normals
+            .iter()
+            .map(|n| Vector3f::new([n.x, n.y, n.z]).normalized())
+            .collect::<Vec<_>>();
+        let triangles = object
+            .geometry
+            .pop()
+            .expect("no geometry found")
+            .shapes
+            .iter()
+            .map(|s| {
+                use wavefront_obj::obj::Primitive;
+                match s.primitive {
+                    Primitive::Triangle((a, _, na), (b, _, nb), (c, _, nc)) => Triangle::new(
+                        [points[a], points[b], points[c]],
+                        if na.is_some() {
+                            Some([
+                                normals[na.unwrap()],
+                                normals[nb.unwrap()],
+                                normals[nc.unwrap()],
+                            ])
+                        } else {
+                            None
+                        },
+                    ),
+                    _ => panic!("unsupported"),
+                }
+            })
+            .collect::<Vec<_>>();
 
         Self {
             points,
             bounding,
-            triangles,
+            triangles: triangles.clone(),
+            kdtree: Node::new(triangles),
         }
     }
 }
@@ -60,11 +105,11 @@ impl Mesh {
 impl Hittable for Mesh {
     fn hit(&self, ray: &Ray, t_min: f64) -> Option<HitTemp> {
         if let Some((l, r)) = self.bounding.intersect(ray) {
-            self.triangles.iter().filter_map(|triangle| {
-                triangle.hit(ray, t_min)
-            }).min_by(|x, y| {
-                x.t.partial_cmp(&y.t).unwrap()
-            })
+            if let Some(ret) = self.kdtree.hit(ray, t_min, INF) {
+                Some(ret)
+            } else {
+                None
+            }
         } else {
             None
         }

@@ -1,5 +1,6 @@
 use serde::Deserialize;
 
+use crate::graphics::shape::rectangle::Rectangle;
 use crate::graphics::{Hit, HitTemp, Hittable, TextureMap};
 use crate::math::matrix::Matrix3;
 use crate::math::vector::Vector3f;
@@ -9,19 +10,18 @@ pub use plane::*;
 use rand::prelude::ThreadRng;
 use rand::Rng;
 pub use sphere::*;
-use crate::graphics::shape::rectangle::Rectangle;
 
 mod bezier;
-mod plane;
-mod sphere;
-mod rectangle;
 mod circle;
 mod mesh;
+mod plane;
+mod rectangle;
+mod sphere;
 mod triangle;
 
-pub use triangle::*;
 pub use circle::*;
 pub use mesh::*;
+pub use triangle::*;
 
 #[derive(Deserialize, Debug)]
 pub enum Shape {
@@ -101,7 +101,7 @@ impl TextureMap for Shape {
             Bezier(bezier) => bezier.texture_map(pos, uv, w, h),
             Rectangle(rec) => rec.texture_map(pos, uv, w, h),
             Circle(_circle) => unimplemented!(),
-            Mesh(_) => unimplemented!()
+            Mesh(_) => unimplemented!(),
         }
     }
 }

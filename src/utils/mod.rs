@@ -41,7 +41,7 @@ impl Task {
             camera: info.camera,
             renderer: info.renderer,
             num_threads: info.num_threads,
-            name: name.to_string()
+            name: name.to_string(),
         }
     }
 

@@ -4,7 +4,7 @@ use std::cmp::min;
 use std::mem::swap;
 
 // 包围盒
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Bounding {
     pub min: Vector3f,
     pub max: Vector3f,
@@ -12,18 +12,23 @@ pub struct Bounding {
 
 impl Bounding {
     // 返回包围盒
-    pub fn build(points: &Vec<Vector3f>) -> Self {
+    pub fn build(points: &[Vector3f]) -> Self {
         assert!(!points.is_empty());
         let mut min = Vector3f::empty();
         let mut max = Vector3f::empty();
         for i in 0..3 {
-            min[i] = points.iter().map(|x| x[i]).min_by(|a, b| a.partial_cmp(b).unwrap()).unwrap();
-            max[i] = points.iter().map(|x| x[i]).max_by(|a, b| a.partial_cmp(b).unwrap()).unwrap();
+            min[i] = points
+                .iter()
+                .map(|x| x[i])
+                .min_by(|a, b| a.partial_cmp(b).unwrap())
+                .unwrap();
+            max[i] = points
+                .iter()
+                .map(|x| x[i])
+                .max_by(|a, b| a.partial_cmp(b).unwrap())
+                .unwrap();
         }
-        Bounding {
-            min,
-            max
-        }
+        Bounding { min, max }
     }
 
     // 求直线与包围盒的相交区间

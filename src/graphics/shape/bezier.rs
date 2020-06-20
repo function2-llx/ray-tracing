@@ -117,7 +117,10 @@ impl TextureMap for BezierRotate {
         let (u, v) = uv.unwrap();
         assert!(0.0 <= u && u <= 1.0);
         assert!(0.0 <= v && v <= 1.0);
-        ((w as FloatT * u) as usize % w, (h as FloatT * v) as usize % h)
+        (
+            (w as FloatT * u) as usize % w,
+            (h as FloatT * v) as usize % h,
+        )
     }
 }
 

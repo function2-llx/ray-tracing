@@ -4,7 +4,7 @@ use crate::graphics::material::{Material, Surface, Texture};
 use crate::graphics::shape::{rand_semisphere, rand_sphere, RandOut};
 use crate::graphics::{Hit, HitTemp, Hittable, Shape, TextureMap};
 use crate::math::vector::{Vector2f, Vector3f};
-use crate::math::{FloatT, Ray};
+use crate::math::{FloatT, Ray, sqr};
 use rand::prelude::ThreadRng;
 
 #[derive(Deserialize, Debug)]
@@ -57,12 +57,16 @@ impl Hittable for Sphere {
 impl TextureMap for Sphere {
     fn texture_map(
         &self,
-        pos: Vector3f,
+        mut pos: Vector3f,
         uv: Option<(FloatT, FloatT)>,
         w: usize,
         h: usize,
     ) -> (usize, usize) {
-        unimplemented!()
+        // pos /= self.radius;
+        let pos = (pos - self.center) / self.radius;
+        let theta = (pos.x() / (sqr(pos.x()) + sqr(pos.y())).sqrt()).acos();
+        let phi = pos.z().acos();
+        ((theta * w as FloatT) as usize % w, (phi * h as FloatT) as usize % h)
     }
 }
 

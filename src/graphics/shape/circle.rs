@@ -1,7 +1,7 @@
+use crate::graphics::shape::{rand_semisphere, RandOut};
+use crate::graphics::{HitTemp, Hittable};
 use crate::math::vector::Vector3f;
-use crate::math::{FloatT, Ray, sqr, PI};
-use crate::graphics::{Hittable, HitTemp};
-use crate::graphics::shape::{RandOut, rand_semisphere};
+use crate::math::{sqr, FloatT, Ray, PI};
 use rand::prelude::ThreadRng;
 use rand::Rng;
 use serde::{Deserialize, Deserializer};
@@ -16,8 +16,9 @@ pub struct Circle {
 }
 
 impl<'de> Deserialize<'de> for Circle {
-    fn deserialize<D>(deserializer: D) -> Result<Self, <D as Deserializer<'de>>::Error> where
-        D: Deserializer<'de>
+    fn deserialize<D>(deserializer: D) -> Result<Self, <D as Deserializer<'de>>::Error>
+    where
+        D: Deserializer<'de>,
     {
         #[derive(Deserialize)]
         struct CircleInfo {
@@ -39,14 +40,15 @@ impl Circle {
             normal,
             radius,
             x,
-            y
+            y,
         }
     }
 }
 
 impl Hittable for Circle {
     fn hit(&self, ray: &Ray, t_min: f64) -> Option<HitTemp> {
-        let t = -(-Vector3f::dot(&self.origin, &self.normal) + Vector3f::dot(&self.normal, &ray.origin))
+        let t = -(-Vector3f::dot(&self.origin, &self.normal)
+            + Vector3f::dot(&self.normal, &ray.origin))
             / Vector3f::dot(&self.normal, &ray.direction);
         if t > t_min {
             let pos = ray.at(t);
