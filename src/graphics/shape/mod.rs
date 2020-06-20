@@ -9,17 +9,23 @@ pub use plane::*;
 use rand::prelude::ThreadRng;
 use rand::Rng;
 pub use sphere::*;
+use crate::graphics::shape::rectangle::Rectangle;
 
 mod bezier;
 mod plane;
 mod sphere;
 mod rectangle;
+mod circle;
+
+pub use circle::*;
 
 #[derive(Deserialize, Debug)]
 pub enum Shape {
     Sphere(Sphere),
     Plane(Plane),
     Bezier(BezierRotate),
+    Rectangle(Rectangle),
+    Circle(Circle),
 }
 
 impl RandOut for Shape {
@@ -28,7 +34,9 @@ impl RandOut for Shape {
         match self {
             Sphere(sphere) => sphere.rand_out(rng),
             Plane(plane) => plane.rand_out(rng),
-            _ => unimplemented!(),
+            Rectangle(rec) => rec.rand_out(rng),
+            Circle(circle) => circle.rand_out(rng),
+            Bezier(_) => unimplemented!(),
         }
     }
 }
@@ -65,6 +73,8 @@ impl Hittable for Shape {
             Sphere(sphere) => sphere.hit(r, t_min),
             Plane(plane) => plane.hit(r, t_min),
             Bezier(bezier) => bezier.hit(r, t_min),
+            Rectangle(rec) => rec.hit(r, t_min),
+            Circle(circle) => circle.hit(r, t_min),
         }
     }
 }
@@ -82,6 +92,8 @@ impl TextureMap for Shape {
             Sphere(sphere) => sphere.texture_map(pos, uv, w, h),
             Plane(plane) => plane.texture_map(pos, uv, w, h),
             Bezier(bezier) => bezier.texture_map(pos, uv, w, h),
+            Rectangle(rec) => rec.texture_map(pos, uv, w, h),
+            Circle(circle) => unimplemented!(),
         }
     }
 }

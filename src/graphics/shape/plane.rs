@@ -16,6 +16,21 @@ pub struct Plane {
     y: Vector3f,
 }
 
+impl Plane {
+    pub fn new(normal: Vector3f, d: FloatT) -> Self {
+        let origin = normal * d;
+        let x = normal.get_orthogonal();
+        let y = Vector3f::cross(&normal, &x);
+        Plane {
+            normal,
+            d,
+            origin,
+            x,
+            y,
+        }
+    }
+}
+
 impl RandOut for Plane {
     fn rand_out(&self, rng: &mut ThreadRng) -> Ray {
         Ray::new(
@@ -39,16 +54,7 @@ impl<'de> Deserialize<'de> for Plane {
         }
 
         let info = PlaneInfo::deserialize(deserializer)?;
-        let origin = info.normal * info.d;
-        let x = info.normal.get_orthogonal();
-        let y = Vector3f::cross(&info.normal, &x);
-        Ok(Plane {
-            normal: info.normal,
-            d: info.d,
-            origin,
-            x,
-            y,
-        })
+        Ok(Plane::new(info.normal, info.d))
     }
 }
 

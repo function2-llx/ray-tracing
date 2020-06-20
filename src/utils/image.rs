@@ -37,6 +37,9 @@ fn infer_format(path: &str) -> Option<Format> {
     let path = path.to_lowercase();
     // let path = path.as_str();
     use Format::*;
+    if &path[path.len() - 4..path.len()] == "jpeg" {
+        return Some(JPG);
+    }
     match &path[path.len() - 3..path.len()] {
         s if s == "jpg" => Some(JPG),
         s if s == "png" => Some(PNG),

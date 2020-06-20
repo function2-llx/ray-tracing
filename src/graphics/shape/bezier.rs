@@ -117,7 +117,7 @@ impl TextureMap for BezierRotate {
         let (u, v) = uv.unwrap();
         assert!(0.0 <= u && u <= 1.0);
         assert!(0.0 <= v && v <= 1.0);
-        ((w as FloatT * u) as usize, (h as FloatT * v) as usize)
+        ((w as FloatT * u) as usize % w, (h as FloatT * v) as usize % h)
     }
 }
 
@@ -161,7 +161,7 @@ impl Hittable for BezierRotate {
         let solve = |mut t| {
             let (mut x, mut y) = self.curve.eval(t);
             let mut f = a * sqr(y) + b * y + c + w * sqr(x);
-            for _ in 0..30 {
+            for _ in 0..20 {
                 let (dx, dy) = self.curve.derivative(t);
                 let df = 2.0 * a * y * dy + b * dy + 2.0 * w * x * dx;
                 let s = f / df;

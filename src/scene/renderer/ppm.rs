@@ -67,7 +67,7 @@ impl Positionable for ViewPoint {
 struct Photon {
     pub pos: Vector3f,
     pub flux: Color,
-    pub dir: Vector3f,
+    // pub dir: Vector3f,
 }
 
 impl Positionable for Photon {
@@ -240,7 +240,7 @@ impl PPM {
                     photons.push(Photon {
                         pos,
                         flux,
-                        dir: ray.direction,
+                        // dir: ray.direction,
                     });
                     self.photon_tracing(
                         scene,

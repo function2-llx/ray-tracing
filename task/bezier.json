@@ -72,7 +72,7 @@
                 "material": {
                     "texture": {
                         "Image": {
-                            "path": "asset/littile-pig-head.jpg",
+                            "path": "asset/alan.jpg",
                             "lr": false,
                             "ud": false
                         }
@@ -98,11 +98,11 @@
             {
                 "shape": {
                     "Sphere": {
-                        "center": [0, 480, 0],
-                        "radius": 1
+                        "center": [0, 495, 0],
+                        "radius": 0.01
                     }
                 },
-                "flux": [250000, 250000, 250000],
+                "flux": [400000, 400000, 400000],
                 "material": {
                     "texture": {
                         "Pure": [0, 0, 0]
@@ -122,7 +122,7 @@
                             [40, 200],
                             [80, 420]
                         ],
-                        "shift": [-400, -500, 100]
+                        "shift": [-400, -500, -100]
                     }
                 },
                 "material": {
@@ -166,16 +166,40 @@
                     "Bezier": {
                         "points": [
                             [0.0, 0.0],
-                            [200, 0],
-                            [200, 200],
-                            [0, 380]
+                            [180, 0],
+                            [180, 180],
+                            [0, 360]
                         ],
-                        "shift": [100, -200, 0]
+                        "shift": [50, -100, 0]
                     }
                 },
                 "material": {
                     "texture": {
                         "Pure": [1, 1, 1]
+                    },
+                    "surface": {
+                        "Refractive": 1.5
+                    }
+                },
+                "flux": [0, 0, 0]
+            },
+            {
+                "shape": {
+                    "Rectangle": {
+                        "w": 447,
+                        "h": 476,
+                        "origin": [799, 0, 0],
+                        "normal": [-1, 0, 0],
+                        "x": [0, 0, -1]
+                    }
+                },
+                "material": {
+                    "texture": {
+                        "Image": {
+                            "path": "asset/girl.jpeg",
+                            "lr": false,
+                            "ud": false
+                        }
                     },
                     "surface": {
                         "Refractive": 1.5
@@ -188,20 +212,20 @@
         "n": 1
     },
     "camera": {
-        "center": [0, 0, -1000],
+        "center": [0, 0, -1200],
         "direction": [0, 0, 1],
         "up": [0, 1, 0],
         "dis": 373,
         "w": 640,
         "h": 480,
-        "anti_alias": 5
+        "anti_alias": 30
     },
     "renderer": {
         "PPM": {
             "pa": 0.5,
-            "photon_num": 5000000,
-            "init_radius": 10,
-            "alpha": 0.3
+            "photon_num": 10000000,
+            "init_radius": 5,
+            "alpha": 0.2
         }
     },
     "num_threads": 10
