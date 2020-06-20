@@ -4,36 +4,6 @@
             {
                 "shape": {
                     "Plane": {
-                        "normal": [1, 0, 0],
-                        "d": -800
-                    }
-                },
-                "flux": [0, 0, 0],
-                "material": {
-                    "texture": {
-                        "Pure": [0.5, 0.5, 0.5]
-                    },
-                    "surface": "Diffuse"
-                }
-            },
-            {
-                "shape": {
-                    "Plane": {
-                        "normal": [-1, 0, 0],
-                        "d": -800
-                    }
-                },
-                "flux": [0, 0, 0],
-                "material": {
-                    "texture": {
-                        "Pure": [0.75, 0.25, 0.25]
-                    },
-                    "surface": "Diffuse"
-                }
-            },
-            {
-                "shape": {
-                    "Plane": {
                         "normal": [0, 1, 0],
                         "d": -500
                     }
@@ -41,38 +11,28 @@
                 "flux": [0, 0, 0],
                 "material": {
                     "texture": {
-                        "Pure": [0.25, 0.25, 0.75]
+                        "Image": {
+                            "path": "asset/wood.png",
+                            "lr": false,
+                            "ud": false
+                        }
                     },
                     "surface": "Diffuse"
                 }
             },
-            {
-                "shape": {
-                    "Plane": {
-                        "normal": [0, -1, 0],
-                        "d": -500
-                    }
-                },
-                "flux": [0, 0, 0],
-                "material": {
-                    "texture": {
-                        "Pure": [0.25, 0.75, 0.25]
-                    },
-                    "surface": "Diffuse"
-                }
-            },
+            
             {
                 "shape": {
                     "Plane": {
                         "normal": [0, 0, -1],
-                        "d": -500
+                        "d": -800
                     }
                 },
                 "flux": [0, 0, 0],
                 "material": {
                     "texture": {
                         "Image": {
-                            "path": "asset/littile-pig-head.jpg",
+                            "path": "asset/wall.png",
                             "lr": false,
                             "ud": false
                         }
@@ -97,13 +57,29 @@
             },
             {
                 "shape": {
-                    "Circle": {
-                        "origin": [0, 499, 0],
-                        "normal": [0, -1, 0],
-                        "radius": 80
+                    "Sphere": {
+                        "center": [-500, 1800, -800],
+                        "radius": 1
                     }
                 },
-                "flux": [400000, 400000, 400000],
+                "flux": [8000000, 8000000, 8000000],
+                "material": {
+                    "texture": {
+                        "Pure": [0, 0, 0]
+                    },
+                    "surface": {
+                        "Diffuse": null
+                    }
+                }
+            },
+            {
+                "shape": {
+                    "Sphere": {
+                        "center": [500, 1800, -800],
+                        "radius": 1
+                    }
+                },
+                "flux": [8000000, 8000000, 8000000],
                 "material": {
                     "texture": {
                         "Pure": [0, 0, 0]
@@ -117,14 +93,65 @@
                 "shape": {
                     "Mesh": {
                         "path": "asset/dragon.obj",
-                        "shift": [100, -400, -200],
-                        "scale": [300, 300, 300]
+                        "shift": [-400, -150, 0],
+                        "scale": [500, 500, 500],
+                        "rotates": [
+                            {
+                                "dim": 1,
+                                "degree": 20
+                            }
+                        ]
                     }
                 },
                 "flux": [0, 0, 0],
                 "material": {
                     "texture": {
-                        "Pure": [0.25, 0.25, 0.25]
+                        "Pure": [0.3, 0.25, 0.25]
+                    },
+                    "surface": {
+                        "Diffuse": null
+                    }
+                }
+            },
+            {
+                "shape": {
+                    "Mesh": {
+                        "path": "asset/diamond.obj",
+                        "shift": [400, -150, 0],
+                        "scale": [150, 150, 150],
+                        "rotates": [
+                            {
+                                "dim": 0,
+                                "degree": -95
+                            }
+                        ]
+                    }
+                },
+                "flux": [0, 0, 0],
+                "material": {
+                    "texture": {
+                        "Pure": [1, 1, 1]
+                    },
+                    "surface": {
+                        "Specular": null
+                    }
+                }
+            },
+            {
+                "shape": {
+                    "Sphere": {
+                        "center": [400, -200, -500],
+                        "radius": 100
+                    }
+                },
+                "flux": [0, 0, 0],
+                "material": {
+                    "texture": {
+                        "Image": {
+                            "path": "asset/alan.jpg",
+                            "lr": false,
+                            "ud": false
+                        }
                     },
                     "surface": {
                         "Diffuse": null
@@ -136,19 +163,19 @@
         "n": 1
     },
     "camera": {
-        "center": [0, 0, -1200],
+        "center": [0, 0, -1000],
         "direction": [0, 0, 1],
         "up": [0, 1, 0],
         "dis": 373,
-        "w": 640,
-        "h": 480,
-        "anti_alias": 20
+        "w": 1024,
+        "h": 768,
+        "anti_alias": 2
     },
     "renderer": {
         "PPM": {
             "pa": 0.5,
-            "photon_num": 5000000,
-            "init_radius": 5,
+            "photon_num": 50000000,
+            "init_radius": 3,
             "alpha": 0.2
         }
     },

@@ -58,7 +58,7 @@ impl Node {
                 cur.push(t.clone());
             }
         }
-        println!("({}, {}, {})", l.len(), cur.len(), r.len());
+        // println!("({}, {}, {})", l.len(), cur.len(), r.len());
         if l.is_empty() && cur.is_empty() || cur.is_empty() && r.is_empty() {
             return Box::new(Node {
                 triangles,

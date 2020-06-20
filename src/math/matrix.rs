@@ -8,7 +8,7 @@ use std::ops::Mul;
 // Matrix with order 3
 #[repr(C)]
 #[derive(Copy, Clone, Deserialize)]
-pub struct Matrix3([[FloatT; 3]; 3]);
+pub struct Matrix3(pub [[FloatT; 3]; 3]);
 
 impl Mul for Matrix3 {
     type Output = Self;

@@ -8,6 +8,7 @@ use crate::utils::kdtree::triangle::Node;
 use serde::export::Formatter;
 use serde::{Deserialize, Deserializer};
 use std::fmt::Debug;
+use crate::math::matrix::Matrix3;
 
 pub struct Mesh {
     points: Vec<Vector3f>,
@@ -30,19 +31,37 @@ impl<'de> Deserialize<'de> for Mesh {
         D: Deserializer<'de>,
     {
         #[derive(Deserialize)]
+        struct Rotate {
+            dim: usize,
+            degree: FloatT,
+        }
+        #[derive(Deserialize)]
         struct MeshInfo {
             path: String,
             shift: Vector3f,
             scale: Vector3f,
+            rotates: Vec<Rotate>,
         }
 
         let info = MeshInfo::deserialize(deserializer)?;
-        Ok(Mesh::from_obj(&info.path, info.shift, info.scale))
+        let rotates = info.rotates.iter().map(|r| {
+            let t = r.degree.to_radians();
+            let cos = t.cos();
+            let sin = t.sin();
+
+            match r.dim {
+                0 => Matrix3([[1.0, 0.0, 0.0], [0.0, cos, -sin], [0.0, sin, cos]]),
+                1 => Matrix3([[cos, 0.0, sin], [0.0, 1.0, 0.0], [-sin, 0.0, cos]]),
+                2 => Matrix3([[cos, -sin, 0.0], [sin, cos, 0.0], [0.0, 0.0, 1.0]]),
+                _ => panic!("bad dim"),
+            }
+        }).collect::<Vec<_>>();
+        Ok(Mesh::from_obj(&info.path, info.shift, info.scale, rotates))
     }
 }
 
 impl Mesh {
-    pub fn from_obj(path: &str, shift: Vector3f, scale: Vector3f) -> Self {
+    pub fn from_obj(path: &str, shift: Vector3f, scale: Vector3f, rotates: Vec<Matrix3>) -> Self {
         let data = std::fs::read_to_string(path).expect(&format!("cannot read from {}", path));
         let mut object = wavefront_obj::obj::parse(data)
             .expect(&format!("load from {} failed", path))
@@ -60,7 +79,10 @@ impl Mesh {
         };
         points
             .iter_mut()
-            .for_each(|p| *p = mid + scale * (*p - mid));
+            .for_each(|p| {
+                rotates.iter().for_each(|r| *p = *r * *p);
+                *p = mid + scale * (*p - mid) + shift;
+            });
         let bounding = Bounding::build(&points);
         let normals = object
             .normals
