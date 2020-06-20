@@ -42,6 +42,9 @@ impl Mesh {
         let mid = (bounding.min + bounding.max) / 2.0;
         points.iter_mut().for_each(|p| *p = mid + scale * (*p - mid));
 
+        // 注意这里要重构包围盒
+        let bounding = Bounding::build(&points);
+
         let triangles = (0..mesh.indices.len()).step_by(3).map(|i| {
             Triangle::new([points[mesh.indices[i] as usize], points[mesh.indices[i + 1] as usize], points[mesh.indices[i + 2] as usize]])
         }).collect::<Vec<_>>();

@@ -132,6 +132,24 @@
                     "Mesh": {
                         "path": "asset/heart.obj",
                         "shift": [-100, 0, 0],
+                        "scale": [2, 2, 2]
+                    }
+                },
+                "flux": [0, 0, 0],
+                "material": {
+                    "texture": {
+                        "Pure": [0, 0.25098039, 0.32156863]
+                    },
+                    "surface": {
+                        "Diffuse": null
+                    }
+                }
+            },
+            {
+                "shape": {
+                    "Mesh": {
+                        "path": "asset/heart.obj",
+                        "shift": [-100, 0, 0],
                         "scale": [1, 1, 1]
                     }
                 },
