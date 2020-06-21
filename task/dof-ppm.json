@@ -49,6 +49,25 @@
             {
                 "shape": {
                     "Plane": {
+                        "normal": [0, 0, -1],
+                        "d": -500
+                    }
+                },
+                "flux": [0, 0, 0],
+                "material": {
+                    "texture": {
+                        "Image": {
+                            "path": "asset/littile-pig-head.jpg",
+                            "lr": false,
+                            "ud": false
+                        }
+                    },
+                    "surface": "Diffuse"
+                }
+            },
+            {
+                "shape": {
+                    "Plane": {
                         "normal": [0, 0, 1],
                         "d": -2000
                     }
@@ -64,11 +83,11 @@
             {
                 "shape": {
                     "Sphere": {
-                        "center": [0, 1500, 0],
-                        "radius": 300
+                        "center": [0, 700, 0],
+                        "radius": 100
                     }
                 },
-                "flux": [15, 15, 15],
+                "flux": [1000000, 1000000, 1000000],
                 "material": {
                     "texture": {
                         "Pure": [0, 0, 0]
@@ -98,7 +117,7 @@
             {
                 "shape": {
                     "Sphere": {
-                        "center": [0, -400, 200],
+                        "center": [0, -400, 0],
                         "radius": 100
                     }
                 },
@@ -115,7 +134,7 @@
             {
                 "shape": {
                     "Sphere": {
-                        "center": [300, -400, 600],
+                        "center": [300, -400, 300],
                         "radius": 100
                     }
                 },
@@ -140,15 +159,16 @@
         "dis": 373,
         "w": 1024,
         "h": 768,
-        "anti_alias": 3,
-        "r": 2,
-        "focal": 602
+        "anti_alias": 20,
+        "r": 0
     },
     "renderer": {
-        "PT": {
-            "max_depth": 2,
-            "samples": 10000
+        "PPM": {
+            "pa": 0.5,
+            "photon_num": 50000000,
+            "init_radius": 5,
+            "alpha": 0.1
         }
     },
-    "num_threads": 200
+    "num_threads": 100
 }

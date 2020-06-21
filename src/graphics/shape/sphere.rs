@@ -64,6 +64,9 @@ impl TextureMap for Sphere {
     ) -> (usize, usize) {
         // pos /= self.radius;
         let pos = (pos - self.center) / self.radius;
+        let pos = Vector3f::new([
+            pos.x(), -pos.z(), pos.y()
+        ]);
         let theta = (pos.x() / (sqr(pos.x()) + sqr(pos.y())).sqrt()).acos();
         let phi = pos.z().acos();
         (
