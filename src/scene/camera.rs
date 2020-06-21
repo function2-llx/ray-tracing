@@ -79,7 +79,7 @@ impl Camera {
             let x = x as FloatT + rng.gen_range(0.0, 1.0) - self.w as FloatT / 2.0;
             let y = y as FloatT + rng.gen_range(0.0, 1.0) - self.h as FloatT / 2.0;
             let dir = Vector3f::new([x, y, self.dis]).normalized();
-            // z 轴为主光轴
+            // 如果self.focal 不是 None 则为透镜，z 轴为主光轴；否则为小孔成像
             rays.push(if let Some(f) = self.focal {
                 let f= self.center + f / dir.z() * dir; // 手动算汇聚点
                 let r = rng.gen_range(0.0, self.r);

@@ -161,6 +161,7 @@ impl Hittable for BezierRotate {
         let b = 2.0 * (t1 * d.x() + t2 * d.z());
         let c = sqr(t1) + sqr(t2);
         let w = -sqr(d.y());
+        // 阻尼牛顿迭代
         let solve = |mut t| {
             let (mut x, mut y) = self.curve.eval(t);
             let mut f = a * sqr(y) + b * y + c + w * sqr(x);
@@ -169,6 +170,7 @@ impl Hittable for BezierRotate {
                 let df = 2.0 * a * y * dy + b * dy + 2.0 * w * x * dx;
                 let s = f / df;
                 let mut lambda = 1.0;
+                // 在边界处要小心选取阻尼因子
                 let weight = if t < 0.1 || t > 0.9 { 0.9 } else { 0.5 };
                 while lambda > 1e-5 {
                     let nt = t - lambda * s;
@@ -196,6 +198,7 @@ impl Hittable for BezierRotate {
 
         let samples = self.curve.n;
         let mut ans: Option<(FloatT, FloatT)> = None;
+        // 取多个初值求解
         for i in 0..=samples {
             if let Some(t) = solve(i as FloatT / samples as FloatT) {
                 let k = if d.y().abs() > EPS {

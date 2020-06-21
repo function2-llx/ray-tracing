@@ -35,7 +35,7 @@ impl Task {
             pub renderer: Renderer,
             pub num_threads: usize,
         }
-        let mut info = serde_json::from_str::<TaskInfo>(&data).expect("Cannot convert to json");
+        let mut info = serde_json::from_str::<TaskInfo>(&data).expect("cannot convert to json");
         Task {
             scene: info.scene,
             camera: info.camera,

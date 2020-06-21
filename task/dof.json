@@ -150,5 +150,5 @@
             "samples": 10000
         }
     },
-    "num_threads": 200
+    "num_threads": 10
 }
