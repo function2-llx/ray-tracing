@@ -93,7 +93,7 @@
                 "shape": {
                     "Mesh": {
                         "path": "asset/dragon.obj",
-                        "shift": [-400, -150, 0],
+                        "shift": [-700, -150, 0],
                         "scale": [500, 500, 500],
                         "rotates": [
                             {
@@ -106,7 +106,7 @@
                 "flux": [0, 0, 0],
                 "material": {
                     "texture": {
-                        "Pure": [0.3, 0.25, 0.25]
+                        "Pure": [0.6, 1, 0.6]
                     },
                     "surface": {
                         "Diffuse": null
@@ -116,13 +116,37 @@
             {
                 "shape": {
                     "Mesh": {
+                        "path": "asset/dragon.obj",
+                        "shift": [700, -150, 0],
+                        "scale": [500, 500, 500],
+                        "rotates": [
+                            {
+                                "dim": 1,
+                                "degree": 160
+                            }
+                        ]
+                    }
+                },
+                "flux": [0, 0, 0],
+                "material": {
+                    "texture": {
+                        "Pure": [1.0, 0.6, 0.6]
+                    },
+                    "surface": {
+                        "Refractive": 1.5
+                    }
+                }
+            },
+            {
+                "shape": {
+                    "Mesh": {
                         "path": "asset/diamond.obj",
-                        "shift": [400, -150, 0],
-                        "scale": [150, 150, 150],
+                        "shift": [0, 0, -300],
+                        "scale": [75, 75, 75],
                         "rotates": [
                             {
                                 "dim": 0,
-                                "degree": -95
+                                "degree": -85
                             }
                         ]
                     }
@@ -133,15 +157,34 @@
                         "Pure": [1, 1, 1]
                     },
                     "surface": {
-                        "Specular": null
+                        "Refractive": 2.417
+                    }
+                }
+            },
+            {
+                "shape": {
+                    "Mesh": {
+                        "path": "asset/vase.obj",
+                        "shift": [150, -320, -400],
+                        "scale": [40, 40, 40],
+                        "rotates": []
+                    }
+                },
+                "flux": [0, 0, 0],
+                "material": {
+                    "texture": {
+                        "Pure": [1, 1, 1]
+                    },
+                    "surface": {
+                        "Diffuse": null
                     }
                 }
             },
             {
                 "shape": {
                     "Sphere": {
-                        "center": [400, -200, -500],
-                        "radius": 100
+                        "center": [150, -100, -400],
+                        "radius": 70
                     }
                 },
                 "flux": [0, 0, 0],
@@ -169,15 +212,15 @@
         "dis": 373,
         "w": 1024,
         "h": 768,
-        "anti_alias": 2
+        "anti_alias": 20
     },
     "renderer": {
         "PPM": {
             "pa": 0.5,
-            "photon_num": 10000000,
-            "init_radius": 3,
+            "photon_num": 200000000,
+            "init_radius": 2,
             "alpha": 0.2
         }
     },
-    "num_threads": 10
+    "num_threads": 50
 }
