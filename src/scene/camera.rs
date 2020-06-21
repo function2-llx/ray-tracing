@@ -79,11 +79,12 @@ impl Camera {
             let x = x as FloatT + rng.gen_range(0.0, 1.0) - self.w as FloatT / 2.0;
             let y = y as FloatT + rng.gen_range(0.0, 1.0) - self.h as FloatT / 2.0;
             let dir = Vector3f::new([x, y, self.dis]).normalized();
+            // z 轴为主光轴
             rays.push(if let Some(f) = self.focal {
-                let f= self.center + f * dir; // 手动算焦点
+                let f= self.center + f / dir.z() * dir; // 手动算汇聚点
                 let r = rng.gen_range(0.0, self.r);
                 let theta = rng.gen_range(0.0, 2.0 * PI);
-                let center = self.center + Vector3f::new([r * theta.cos(), r * theta.sin(), 0.0]);
+                let center = self.center + r * Vector3f::new([theta.cos(), theta.sin(), 0.0]);
                 Ray::new(
                     center,
                     self.rotate * (f - center).normalized()
