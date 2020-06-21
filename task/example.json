@@ -5,7 +5,7 @@
                 "shape": {
                     "Plane": {
                         "normal": [1, 0, 0],
-                        "d": -500
+                        "d": -800
                     }
                 },
                 "flux": [0, 0, 0],
@@ -20,7 +20,7 @@
                 "shape": {
                     "Plane": {
                         "normal": [-1, 0, 0],
-                        "d": -500
+                        "d": -800
                     }
                 },
                 "flux": [0, 0, 0],
@@ -185,19 +185,19 @@
         "n": 1
     },
     "camera": {
-        "center": [0, 0, -1000],
+        "center": [0, 0, -800],
         "direction": [0, 0, 1],
         "up": [0, 1, 0],
         "dis": 373,
-        "w": 640,
-        "h": 480,
-        "anti_alias": 5
+        "w": 1024,
+        "h": 768,
+        "anti_alias": 20
     },
     "renderer": {
         "PPM": {
             "pa": 0.5,
-            "photon_num": 5000000,
-            "init_radius": 10,
+            "photon_num": 10000000,
+            "init_radius": 8,
             "alpha": 0.1
         }
     },
