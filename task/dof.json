@@ -98,65 +98,14 @@
             {
                 "shape": {
                     "Sphere": {
-                        "center": [-100, -100, -100],
-                        "radius": 100
+                        "center": [0, 480, 0],
+                        "radius": 1
                     }
                 },
-                "flux": [0.0, 0.0, 0.0],
+                "flux": [200000, 200000, 200000],
                 "material": {
                     "texture": {
-                        "Pure": [0.99, 0.99, 0.99]
-                    },
-                    "surface": {
-                        "Refractive": 1.5
-                    }
-                }
-            },
-            {
-                "shape": {
-                    "Sphere": {
-                        "center": [-100, -100, -100],
-                        "radius": 100
-                    }
-                },
-                "flux": [0.0, 0.0, 0.0],
-                "material": {
-                    "texture": {
-                        "Pure": [0.99, 0.99, 0.99]
-                    },
-                    "surface": {
-                        "Refractive": 1.5
-                    }
-                }
-            },
-            {
-                "shape": {
-                    "Sphere": {
-                        "center": [200, 200, 200],
-                        "radius": 150
-                    }
-                },
-                "flux": [0.0, 0.0, 0.0],
-                "material": {
-                    "texture": {
-                        "Pure": [1, 1, 1]
-                    },
-                    "surface": {
-                        "Specular": null
-                    }
-                }
-            },
-            {
-                "shape": {
-                    "Sphere": {
-                        "center": [-270, -270, 200],
-                        "radius": 150
-                    }
-                },
-                "flux": [0.0, 0.0, 0.0],
-                "material": {
-                    "texture": {
-                        "Pure": [0.2, 0.4, 0.7]
+                        "Pure": [0, 0, 0]
                     },
                     "surface": {
                         "Diffuse": null
@@ -166,14 +115,48 @@
             {
                 "shape": {
                     "Sphere": {
-                        "center": [0, 480, 0],
-                        "radius": 1
+                        "center": [-200, 0, -200],
+                        "radius": 100
                     }
                 },
-                "flux": [200000, 200000, 200000],
+                "flux": [0, 0, 0],
                 "material": {
                     "texture": {
-                        "Pure": [0, 0, 0]
+                        "Pure": [0.5, 0.25, 0.75]
+                    },
+                    "surface": {
+                        "Diffuse": null
+                    }
+                }
+            },
+            {
+                "shape": {
+                    "Sphere": {
+                        "center": [0, 0, 0],
+                        "radius": 100
+                    }
+                },
+                "flux": [0, 0, 0],
+                "material": {
+                    "texture": {
+                        "Pure": [0.5, 0.25, 0.75]
+                    },
+                    "surface": {
+                        "Diffuse": null
+                    }
+                }
+            },
+            {
+                "shape": {
+                    "Sphere": {
+                        "center": [200, 0, 200],
+                        "radius": 100
+                    }
+                },
+                "flux": [0, 0, 0],
+                "material": {
+                    "texture": {
+                        "Pure": [0.5, 0.25, 0.75]
                     },
                     "surface": {
                         "Diffuse": null
@@ -191,12 +174,13 @@
         "dis": 373,
         "w": 1024,
         "h": 768,
-        "anti_alias": 20
+        "anti_alias": 20,
+        "r": 0
     },
     "renderer": {
         "PPM": {
             "pa": 0.5,
-            "photon_num": 10000000,
+            "photon_num": 1000000,
             "init_radius": 8,
             "alpha": 0.1
         }

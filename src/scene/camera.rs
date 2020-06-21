@@ -6,7 +6,7 @@ use serde::{Deserialize, Deserializer};
 
 use crate::math::matrix::Matrix3;
 use crate::math::vector::Vector3f;
-use crate::math::{FloatT, Ray, EPS};
+use crate::math::{FloatT, Ray, EPS, PI};
 use rand::prelude::ThreadRng;
 
 pub struct Camera {
@@ -22,6 +22,8 @@ pub struct Camera {
     pub w: usize,
     pub h: usize,
     pub anti_alias: usize,
+    pub focal: Option<FloatT>,
+    pub r: FloatT,  // 镜头半径
 }
 
 impl<'de> Deserialize<'de> for Camera {
@@ -39,6 +41,8 @@ impl<'de> Deserialize<'de> for Camera {
             pub w: usize,
             pub h: usize,
             pub anti_alias: usize,
+            focal: Option<FloatT>,
+            r: FloatT,  // aperture
         }
 
         let info = CameraInfo::deserialize(deserializer)?;
@@ -61,6 +65,8 @@ impl<'de> Deserialize<'de> for Camera {
             w: info.w,
             h: info.h,
             anti_alias: info.anti_alias,
+            focal: info.focal,
+            r: info.r,
         })
     }
 }
@@ -72,10 +78,19 @@ impl Camera {
         for _ in 0..self.anti_alias {
             let x = x as FloatT + rng.gen_range(0.0, 1.0) - self.w as FloatT / 2.0;
             let y = y as FloatT + rng.gen_range(0.0, 1.0) - self.h as FloatT / 2.0;
-            rays.push(Ray::new(
-                self.center,
-                self.rotate * Vector3f::new([x, y, self.dis]).normalized(),
-            ));
+            let dir = Vector3f::new([x, y, self.dis]).normalized();
+            rays.push(if let Some(f) = self.focal {
+                let f= self.center + f * dir; // 手动算焦点
+                let r = rng.gen_range(0.0, self.r);
+                let theta = rng.gen_range(0.0, 2.0 * PI);
+                let center = self.center + Vector3f::new([r * theta.cos(), r * theta.sin(), 0.0]);
+                Ray::new(
+                    center,
+                    self.rotate * (f - center).normalized()
+                )
+            } else {
+                Ray::new(self.center, self.rotate * dir)
+            });
         }
         rays
     }
